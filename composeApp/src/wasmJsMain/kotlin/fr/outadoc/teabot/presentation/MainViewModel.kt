@@ -6,6 +6,8 @@ import fr.outadoc.teabot.AppConstants
 import fr.outadoc.teabot.data.db.DbSource
 import fr.outadoc.teabot.domain.ChatSource
 import fr.outadoc.teabot.domain.Message
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,13 +21,13 @@ class MainViewModel(
     private val dbSource: DbSource,
 ) : ViewModel() {
     data class State(
-        val messages: List<Message> = emptyList(),
+        val messages: ImmutableList<Message> = persistentListOf(),
     )
 
     val state: StateFlow<State> =
         dbSource
             .getAll()
-            .map { State(messages = it) }
+            .map { messages -> State(messages = messages) }
             .flowOn(Dispatchers.Unconfined)
             .stateIn(
                 viewModelScope,

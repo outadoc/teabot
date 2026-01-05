@@ -3,6 +3,8 @@ package fr.outadoc.teabot.data.db
 import Database
 import KeyPath
 import fr.outadoc.teabot.domain.Message
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
@@ -50,12 +52,10 @@ class DbSource {
         }
     }
 
-    fun getAll(): Flow<List<Message>> =
+    fun getAll(): Flow<ImmutableList<Message>> =
         flow {
-            var list = listOf<Message>()
-            val db = getOrCreateDb()
-            db.transaction(STORE_MESSAGES) {
-                list =
+            var list =
+                getOrCreateDb().transaction(STORE_MESSAGES) {
                     objectStore(STORE_MESSAGES)
                         .openCursor()
                         .map { it.value as JsonMessage }
@@ -67,12 +67,13 @@ class DbSource {
                                 text = it.text,
                             )
                         }.toList()
+                        .toPersistentList()
+                }
 
-                emit(list)
-            }
+            emit(list)
 
             additions.collect { newMessage ->
-                list = list + newMessage
+                list = list.add(newMessage)
                 emit(list)
             }
         }
