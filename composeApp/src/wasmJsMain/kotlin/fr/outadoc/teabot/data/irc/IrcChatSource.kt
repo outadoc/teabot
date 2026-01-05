@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.isActive
 import kotlin.random.Random
+import kotlin.time.Instant
 
 class IrcChatSource(
     private val httpClient: HttpClient,
@@ -30,6 +31,8 @@ class IrcChatSource(
                         is Frame.Text -> {
                             val lines = message.readText().lines()
                             lines.forEach { line ->
+                                println(line)
+
                                 when (val message = parse(line)) {
                                     is IrcMessage.Ping -> {
                                         send("PONG :tmi.twitch.tv")
@@ -41,6 +44,7 @@ class IrcChatSource(
                                                 userId = message.userId,
                                                 userName = message.userName,
                                                 messageId = message.messageId,
+                                                sentAt = Instant.fromEpochMilliseconds(message.sentAtTs.toLong()),
                                                 text = message.message,
                                             ),
                                         )
@@ -73,6 +77,7 @@ class IrcChatSource(
                     userId = parsed.tags["user-id"] ?: return null,
                     userName = parsed.tags["display-name"] ?: return null,
                     messageId = parsed.tags["id"] ?: return null,
+                    sentAtTs = parsed.tags["tmi-sent-ts"] ?: return null,
                     message = msg.message,
                 )
             }
@@ -87,9 +92,10 @@ class IrcChatSource(
         data object Ping : IrcMessage
 
         data class PrivMsg(
+            val messageId: String,
             val userId: String,
             val userName: String,
-            val messageId: String,
+            val sentAtTs: String,
             val message: String,
         ) : IrcMessage
     }

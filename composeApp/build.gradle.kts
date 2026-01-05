@@ -38,6 +38,13 @@ kotlin {
             implementation("io.ktor:ktor-client-cio:3.3.3")
             implementation("io.ktor:ktor-client-websockets:3.3.3")
             implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
+        }
+
+        wasmJsMain {
+            dependencies {
+                implementation(npm("@js-joda/timezone", "2.22.0"))
+            }
         }
 
         commonTest.dependencies {

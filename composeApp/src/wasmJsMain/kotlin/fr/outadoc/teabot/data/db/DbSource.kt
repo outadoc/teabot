@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import openDatabase
+import kotlin.time.Instant
 
 class DbSource {
     private val mutex = Mutex()
@@ -28,6 +29,7 @@ class DbSource {
                 if (oldVersion < 1) {
                     val store = database.createObjectStore(STORE_MESSAGES, KeyPath("message_id"))
                     store.createIndex("message_id", KeyPath("message_id"), unique = true)
+                    store.createIndex("sent_at_iso", KeyPath("sent_at_iso"), unique = false)
                     store.createIndex("user_id", KeyPath("user_id"), unique = false)
                 }
             }.also { database = it }
@@ -44,6 +46,7 @@ class DbSource {
                     message_id = message.messageId
                     user_id = message.userId
                     user_name = message.userName
+                    sent_at_iso = message.sentAt.toString()
                     text = message.text
                 }
 
@@ -57,6 +60,7 @@ class DbSource {
             var list =
                 getOrCreateDb().transaction(STORE_MESSAGES) {
                     objectStore(STORE_MESSAGES)
+                        .index("sent_at_iso")
                         .openCursor()
                         .map { it.value as JsonMessage }
                         .map {
@@ -64,6 +68,7 @@ class DbSource {
                                 userId = it.user_id,
                                 userName = it.user_name,
                                 messageId = it.message_id,
+                                sentAt = Instant.parse(it.sent_at_iso),
                                 text = it.text,
                             )
                         }.toList()
