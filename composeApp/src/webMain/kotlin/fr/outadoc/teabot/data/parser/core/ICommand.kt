@@ -7,6 +7,5 @@
 package fr.outadoc.teabot.data.parser.core
 
 internal interface ICommand {
-
     val command: String
 }

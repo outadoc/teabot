@@ -7,25 +7,23 @@
 package fr.outadoc.teabot.data.parser.core.message
 
 internal interface IMessageParser<out T> {
-
     fun parse(message: IrcMessage): T?
 }
 
 internal interface IComponentsParser<out T> {
-
     fun parseFromComponents(components: IrcMessageComponents): T?
 }
 
 internal abstract class MessageParser<out T> :
     IMessageParser<T>,
     IComponentsParser<T> {
-
     override fun parse(message: IrcMessage): T? {
-        val components = IrcMessageComponents(
-            tags = message.tags,
-            prefix = message.prefix,
-            parameters = message.parameters
-        )
+        val components =
+            IrcMessageComponents(
+                tags = message.tags,
+                prefix = message.prefix,
+                parameters = message.parameters,
+            )
         return parseFromComponents(components)
     }
 }

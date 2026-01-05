@@ -6,11 +6,13 @@ import fr.outadoc.teabot.AppConstants
 import fr.outadoc.teabot.domain.ChatSource
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val source: ChatSource) : ViewModel() {
-
+class MainViewModel(
+    private val source: ChatSource,
+) : ViewModel() {
     fun onStart() {
         viewModelScope.launch {
-            source.getMessages(AppConstants.CHANNEL_USERNAME)
+            source
+                .getMessages(AppConstants.CHANNEL_USERNAME)
                 .collect { message ->
                     println(message)
                 }
