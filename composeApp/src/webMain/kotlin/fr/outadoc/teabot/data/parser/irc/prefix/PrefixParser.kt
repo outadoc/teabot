@@ -4,9 +4,9 @@
  * https://github.com/WillowChat/Kale
  */
 
-package fr.outadoc.teabot.parser.irc.prefix
+package fr.outadoc.teabot.data.parser.irc.prefix
 
-import fr.outadoc.teabot.parser.irc.CharacterCodes
+import fr.outadoc.teabot.data.parser.irc.CharacterCodes
 
 internal object PrefixParser : IPrefixParser {
 

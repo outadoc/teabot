@@ -4,7 +4,7 @@
  * https://github.com/WillowChat/Kale
  */
 
-package fr.outadoc.teabot.parser.irc.prefix
+package fr.outadoc.teabot.data.parser.irc.prefix
 
 internal fun prefix(nick: String) = Prefix(nick = nick)
 

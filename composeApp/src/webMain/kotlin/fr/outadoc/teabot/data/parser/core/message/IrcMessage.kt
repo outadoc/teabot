@@ -4,7 +4,7 @@
  * https://github.com/WillowChat/Kale
  */
 
-package fr.outadoc.teabot.parser.core.message
+package fr.outadoc.teabot.data.parser.core.message
 
 internal data class IrcMessage(
     val tags: Map<String, String?> = emptyMap(),

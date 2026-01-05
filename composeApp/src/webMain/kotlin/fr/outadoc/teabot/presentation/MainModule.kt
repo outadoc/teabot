@@ -1,4 +1,4 @@
-package fr.outadoc.teabot
+package fr.outadoc.teabot.presentation
 
 import fr.outadoc.teabot.data.IrcChatSource
 import fr.outadoc.teabot.domain.ChatSource

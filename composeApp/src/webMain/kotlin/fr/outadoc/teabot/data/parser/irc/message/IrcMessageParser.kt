@@ -4,10 +4,10 @@
  * https://github.com/WillowChat/Kale
  */
 
-package fr.outadoc.teabot.parser.irc.message
+package fr.outadoc.teabot.data.parser.irc.message
 
-import fr.outadoc.teabot.parser.core.message.IrcMessage
-import fr.outadoc.teabot.parser.irc.CharacterCodes
+import fr.outadoc.teabot.data.parser.core.message.IrcMessage
+import fr.outadoc.teabot.data.parser.irc.CharacterCodes
 
 internal interface IIrcMessageParser {
     fun parse(line: String): IrcMessage?

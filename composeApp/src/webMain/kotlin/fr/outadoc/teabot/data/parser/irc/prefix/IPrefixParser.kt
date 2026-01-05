@@ -4,9 +4,8 @@
  * https://github.com/WillowChat/Kale
  */
 
-package fr.outadoc.teabot.parser.core
+package fr.outadoc.teabot.data.parser.irc.prefix
 
-internal interface ICommand {
-
-    val command: String
+internal interface IPrefixParser {
+    fun parse(rawPrefix: String): Prefix?
 }

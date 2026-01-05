@@ -2,9 +2,9 @@ package fr.outadoc.teabot.data
 
 import fr.outadoc.teabot.domain.ChatSource
 import fr.outadoc.teabot.domain.Message
-import fr.outadoc.teabot.parser.irc.message.IrcMessageParser
-import fr.outadoc.teabot.parser.irc.message.rfc1459.PingMessage
-import fr.outadoc.teabot.parser.irc.message.rfc1459.PrivMsgMessage
+import fr.outadoc.teabot.data.parser.irc.message.IrcMessageParser
+import fr.outadoc.teabot.data.parser.irc.message.rfc1459.PingMessage
+import fr.outadoc.teabot.data.parser.irc.message.rfc1459.PrivMsgMessage
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.websocket.Frame

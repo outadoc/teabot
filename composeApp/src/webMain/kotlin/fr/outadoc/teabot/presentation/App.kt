@@ -1,4 +1,4 @@
-package fr.outadoc.teabot
+package fr.outadoc.teabot.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

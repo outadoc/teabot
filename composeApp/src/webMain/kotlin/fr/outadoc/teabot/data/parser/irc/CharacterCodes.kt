@@ -4,7 +4,7 @@
  * https://github.com/WillowChat/Kale
  */
 
-package fr.outadoc.teabot.parser.irc
+package fr.outadoc.teabot.data.parser.irc
 
 internal object CharacterCodes {
     const val LF: Char = 0xA.toChar()

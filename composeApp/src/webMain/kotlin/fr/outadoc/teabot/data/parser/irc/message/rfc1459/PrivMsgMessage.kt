@@ -4,13 +4,13 @@
  * https://github.com/WillowChat/Kale
  */
 
-package fr.outadoc.teabot.parser.irc.message.rfc1459
+package fr.outadoc.teabot.data.parser.irc.message.rfc1459
 
-import fr.outadoc.teabot.parser.core.ICommand
-import fr.outadoc.teabot.parser.core.message.IrcMessageComponents
-import fr.outadoc.teabot.parser.core.message.MessageParser
-import fr.outadoc.teabot.parser.irc.prefix.Prefix
-import fr.outadoc.teabot.parser.irc.prefix.PrefixParser
+import fr.outadoc.teabot.data.parser.core.ICommand
+import fr.outadoc.teabot.data.parser.core.message.IrcMessageComponents
+import fr.outadoc.teabot.data.parser.core.message.MessageParser
+import fr.outadoc.teabot.data.parser.irc.prefix.Prefix
+import fr.outadoc.teabot.data.parser.irc.prefix.PrefixParser
 
 internal object PrivMsgMessage : ICommand {
 
