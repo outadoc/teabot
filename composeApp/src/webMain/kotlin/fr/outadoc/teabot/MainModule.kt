@@ -1,5 +1,7 @@
 package fr.outadoc.teabot
 
+import fr.outadoc.teabot.data.IrcChatSource
+import fr.outadoc.teabot.domain.ChatSource
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.WebSockets
 import org.koin.core.module.dsl.viewModel
@@ -12,5 +14,6 @@ val MainModule = module {
         }
     }
 
+    single<ChatSource> { IrcChatSource(get()) }
     viewModel { MainViewModel(get()) }
 }
