@@ -40,7 +40,7 @@ class DbSource {
             return openDatabase(DB_NAME, 1) { database, oldVersion, newVersion ->
                 if (oldVersion < 1) {
                     database.createObjectStore(STORE_USERS, KeyPath("user_id")).apply {
-                        createIndex("user_id", KeyPath("user_id"), unique = false)
+                        createIndex("user_id", KeyPath("user_id"), unique = true)
                     }
                 }
             }.also { database = it }

@@ -12,7 +12,9 @@ val MainModule =
     module {
         single {
             HttpClient {
-                install(WebSockets)
+                install(WebSockets) {
+                    pingIntervalMillis = 10_000
+                }
             }
         }
 
