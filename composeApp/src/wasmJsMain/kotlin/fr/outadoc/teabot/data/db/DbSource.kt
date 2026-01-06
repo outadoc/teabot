@@ -23,6 +23,7 @@ import kotlinx.coroutines.sync.withLock
 import openDatabase
 import kotlin.time.Instant
 
+@OptIn(ExperimentalWasmJsInterop::class)
 class DbSource {
     private val mutex = Mutex()
     private var database: Database? = null
@@ -43,7 +44,6 @@ class DbSource {
         }
     }
 
-    @OptIn(ExperimentalWasmJsInterop::class)
     suspend fun saveMessage(message: ChatMessage) {
         getOrCreateDb().writeTransaction(STORE_USERS) {
             val store = objectStore(STORE_USERS)
@@ -102,34 +102,8 @@ class DbSource {
                         .index("sent_at_iso")
                         .openCursor()
                         .map { it.value as DbUser }
-                        .map { user ->
-                            User(
-                                userId = user.user_id,
-                                userName = user.user_name,
-                                teas =
-                                    user.teas
-                                        .toList()
-                                        .map { tea ->
-                                            Tea(
-                                                sentAt = Instant.fromEpochMilliseconds(tea.sent_at_ts),
-                                                isArchived = tea.is_archived,
-                                                messages =
-                                                    tea.messages
-                                                        .toList()
-                                                        .map { message ->
-                                                            Message(
-                                                                messageId = message.message_id,
-                                                                sentAt =
-                                                                    Instant.fromEpochMilliseconds(
-                                                                        message.sent_at_ts,
-                                                                    ),
-                                                                text = message.text,
-                                                            )
-                                                        }.toImmutableList(),
-                                            )
-                                        }.toImmutableList(),
-                            )
-                        }.toList()
+                        .map { user -> user.toDomain() }
+                        .toList()
                         .toPersistentList()
                 }
 
@@ -140,6 +114,35 @@ class DbSource {
                 emit(list)
             }
         }
+
+    private fun DbUser.toDomain(): User =
+        User(
+            userId = user_id,
+            userName = user_name,
+            teas =
+                teas
+                    .toList()
+                    .map { tea -> tea.toDomain() }
+                    .toImmutableList(),
+        )
+
+    private fun DbTea.toDomain(): Tea =
+        Tea(
+            sentAt = Instant.fromEpochMilliseconds(sent_at_ts),
+            isArchived = is_archived,
+            messages =
+                messages
+                    .toList()
+                    .map { message -> message.toDomain() }
+                    .toImmutableList(),
+        )
+
+    private fun DbMessage.toDomain(): Message =
+        Message(
+            messageId = message_id,
+            sentAt = Instant.fromEpochMilliseconds(sent_at_ts),
+            text = text,
+        )
 
     private companion object {
         const val DB_NAME = "teabot-db"
