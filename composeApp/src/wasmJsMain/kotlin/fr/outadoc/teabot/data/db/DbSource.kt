@@ -11,6 +11,7 @@ import fr.outadoc.teabot.domain.model.Message
 import fr.outadoc.teabot.domain.model.Tea
 import fr.outadoc.teabot.domain.model.User
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -54,47 +55,55 @@ class DbSource {
         getOrCreateDb().writeTransaction(STORE_USERS) {
             val store = objectStore(STORE_USERS)
 
-            val existingUser: DbUser? =
-                store.get(IDBKey(message.userId)) as DbUser?
+            val newMessage =
+                Message(
+                    messageId = message.messageId,
+                    sentAt = message.sentAt,
+                    text = message.text,
+                )
 
-            val user: DbUser =
+            val existingUser: User? =
+                (store.get(IDBKey(message.userId)) as DbUser?)
+                    ?.toDomain()
+
+            val user: User =
                 existingUser
-                    ?: jso<DbUser>().apply {
-                        user_id = message.userId
-                        user_name = message.userName
-                        teas = JsArray()
-                    }
+                    ?: User(
+                        userId = message.userId,
+                        userName = message.userName,
+                        teas = persistentListOf(),
+                    )
 
-            // Find latest unarchived tea
-            val existingTea: DbTea? =
-                user.teas
-                    .toList()
-                    .filter { tea -> !tea.is_archived }
-                    .maxByOrNull { tea -> tea.sent_at_ts }
+            // If the last tea is unarchived, we'll add the message to it.
+            // Otherwise, we'll prepare some new tea.
+            val hotTea: Tea? =
+                user.teas.firstOrNull()?.takeIf { tea -> !tea.isArchived }
 
-            val tea: DbTea =
-                existingTea
-                    ?: jso<DbTea>().apply {
-                        is_archived = false
-                        sent_at_ts = message.sentAt.toEpochMilliseconds()
-                        messages = JsArray()
-                    }
+            val updatedUser =
+                user.copy(
+                    teas =
+                        if (hotTea == null) {
+                            user.teas.add(
+                                0,
+                                Tea(
+                                    isArchived = false,
+                                    sentAt = message.sentAt,
+                                    messages = persistentListOf(newMessage),
+                                ),
+                            )
+                        } else {
+                            user.teas
+                                .removeAt(0)
+                                .add(
+                                    0,
+                                    hotTea.copy(
+                                        messages = hotTea.messages.add(newMessage),
+                                    ),
+                                )
+                        },
+                )
 
-            val newMessage: DbMessage =
-                jso<DbMessage>().apply {
-                    message_id = message.messageId
-                    sent_at_ts = message.sentAt.toEpochMilliseconds()
-                    text = message.text
-                }
-
-            tea.messages =
-                tea.messages
-                    .toList()
-                    .toPersistentList()
-                    .add(newMessage)
-                    .toJsArray()
-
-            store.add(user)
+            store.put(updatedUser.toData())
 
             refresh()
         }
@@ -130,7 +139,8 @@ class DbSource {
                 teas
                     .toList()
                     .map { tea -> tea.toDomain() }
-                    .toImmutableList(),
+                    .sortedByDescending { tea -> tea.sentAt }
+                    .toPersistentList(),
         )
 
     private fun DbTea.toDomain(): Tea =
@@ -141,7 +151,8 @@ class DbSource {
                 messages
                     .toList()
                     .map { message -> message.toDomain() }
-                    .toImmutableList(),
+                    .sortedBy { message -> message.sentAt }
+                    .toPersistentList(),
         )
 
     private fun DbMessage.toDomain(): Message =
@@ -150,6 +161,37 @@ class DbSource {
             sentAt = Instant.fromEpochMilliseconds(sent_at_ts),
             text = text,
         )
+
+    private fun Message.toData(): DbMessage =
+        jso<DbMessage>().apply {
+            message_id = this@toData.messageId
+            sent_at_ts = this@toData.sentAt.toEpochMilliseconds()
+            text = this@toData.text
+        }
+
+    private fun Tea.toData(): DbTea =
+        jso<DbTea>().apply {
+            is_archived = this@toData.isArchived
+            sent_at_ts = this@toData.sentAt.toEpochMilliseconds()
+            messages =
+                this@toData
+                    .messages
+                    .sortedBy { message -> message.sentAt }
+                    .map { it.toData() }
+                    .toJsArray()
+        }
+
+    private fun User.toData(): DbUser =
+        jso<DbUser>().apply {
+            user_id = this@toData.userId
+            user_name = this@toData.userName
+            teas =
+                this@toData
+                    .teas
+                    .sortedByDescending { tea -> tea.sentAt }
+                    .map { tea -> tea.toData() }
+                    .toJsArray()
+        }
 
     private companion object {
         const val DB_NAME = "teabot-db"
