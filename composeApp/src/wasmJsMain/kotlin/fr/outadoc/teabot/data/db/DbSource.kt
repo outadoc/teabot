@@ -2,6 +2,7 @@ package fr.outadoc.teabot.data.db
 
 import Database
 import KeyPath
+import com.juul.indexeddb.external.IDBKey
 import fr.outadoc.teabot.domain.Message
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toPersistentList
@@ -27,10 +28,15 @@ class DbSource {
             database?.let { return it }
             return openDatabase(DB_NAME, 1) { database, oldVersion, newVersion ->
                 if (oldVersion < 1) {
-                    val store = database.createObjectStore(STORE_MESSAGES, KeyPath("message_id"))
-                    store.createIndex("message_id", KeyPath("message_id"), unique = true)
-                    store.createIndex("sent_at_iso", KeyPath("sent_at_iso"), unique = false)
-                    store.createIndex("user_id", KeyPath("user_id"), unique = false)
+                    database.createObjectStore(STORE_MESSAGES, KeyPath("message_id")).apply {
+                        createIndex("message_id", KeyPath("message_id"), unique = true)
+                        createIndex("sent_at_iso", KeyPath("sent_at_iso"), unique = false)
+                        createIndex("user_id", KeyPath("user_id"), unique = false)
+                    }
+
+                    database.createObjectStore(STORE_USERS, KeyPath("user_id")).apply {
+                        createIndex("user_id", KeyPath("user_id"), unique = false)
+                    }
                 }
             }.also { database = it }
         }
@@ -38,14 +44,19 @@ class DbSource {
 
     @OptIn(ExperimentalWasmJsInterop::class)
     suspend fun saveMessage(message: Message) {
-        val db = getOrCreateDb()
-        db.writeTransaction(STORE_MESSAGES) {
+        getOrCreateDb().writeTransaction(STORE_MESSAGES) {
             val store = objectStore(STORE_MESSAGES)
+
+            val existingUser = store.get(IDBKey(message.userId)) as JsonUser?
+            val user = existingUser
+                ?: jso<JsonUser>().apply {
+                    user_id = message.userId
+                    user_name = message.userName
+                }
+
             val newMessage =
                 jso<JsonMessage>().apply {
                     message_id = message.messageId
-                    user_id = message.userId
-                    user_name = message.userName
                     sent_at_iso = message.sentAt.toString()
                     text = message.text
                 }
@@ -86,5 +97,6 @@ class DbSource {
     private companion object {
         const val DB_NAME = "teabot-db"
         const val STORE_MESSAGES = "messages"
+        const val STORE_USERS = "users"
     }
 }
