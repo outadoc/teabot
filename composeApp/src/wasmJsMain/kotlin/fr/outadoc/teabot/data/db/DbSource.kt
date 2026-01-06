@@ -93,7 +93,10 @@ class DbSource {
                                 .add(
                                     0,
                                     hotTea.copy(
-                                        messages = hotTea.messages.add(newMessage),
+                                        messages =
+                                            hotTea.messages
+                                                .removeAll { it.messageId == newMessage.messageId }
+                                                .add(newMessage),
                                     ),
                                 )
                         },

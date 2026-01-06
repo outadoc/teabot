@@ -1,0 +1,9 @@
+- [ ] Archivage des conversations
+- [ ] Filtre par pseudo (champ de recherche)
+- [ ] Résilience de la websocket
+- [ ] Filtrage sur le mot !thé
+- [ ] Formatage des dates/heures
+- [ ] Ajout de header / pied de page (crédits)
+- [ ] Bouton de lien vers un profil Twitch
+- [ ] État selected des thés
+- [ ] Petit disclaimer "postez votre thé en préfixant **chaque message** avec !thé"

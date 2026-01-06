@@ -5,14 +5,16 @@ import androidx.lifecycle.viewModelScope
 import fr.outadoc.teabot.AppConstants
 import fr.outadoc.teabot.data.db.DbSource
 import fr.outadoc.teabot.domain.ChatSource
-import fr.outadoc.teabot.domain.model.User
+import fr.outadoc.teabot.presentation.model.UiMessage
+import fr.outadoc.teabot.presentation.model.UiTea
+import fr.outadoc.teabot.presentation.model.UiUser
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.Dispatchers
+import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -21,19 +23,50 @@ class MainViewModel(
     private val dbSource: DbSource,
 ) : ViewModel() {
     data class State(
-        val users: ImmutableList<User> = persistentListOf(),
+        val selectedTea: UiTea? = null,
+        val teaList: ImmutableList<UiTea> = persistentListOf(),
     )
 
+    private val selectedTeaFlow = MutableStateFlow<UiTea?>(null)
+
     val state: StateFlow<State> =
-        dbSource
-            .getAll()
-            .map { users -> State(users = users) }
-            .flowOn(Dispatchers.Unconfined)
-            .stateIn(
-                viewModelScope,
-                started = SharingStarted.WhileSubscribed(),
-                initialValue = State(),
+        combine(
+            dbSource.getAll(),
+            selectedTeaFlow,
+        ) { users, selectedTea ->
+            State(
+                selectedTea = selectedTea,
+                teaList =
+                    users
+                        .flatMap { user ->
+                            user.teas.map { tea ->
+                                UiTea(
+                                    sentAt = tea.sentAt,
+                                    isArchived = tea.isArchived,
+                                    user =
+                                        UiUser(
+                                            userId = user.userId,
+                                            userName = user.userName,
+                                        ),
+                                    messages =
+                                        tea.messages
+                                            .map { message ->
+                                                UiMessage(
+                                                    messageId = message.messageId,
+                                                    sentAt = message.sentAt,
+                                                    text = message.text,
+                                                )
+                                            }.toPersistentList(),
+                                )
+                            }
+                        }.sortedByDescending { tea -> tea.sentAt }
+                        .toPersistentList(),
             )
+        }.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = State(),
+        )
 
     fun onStart() {
         viewModelScope.launch {
@@ -46,6 +79,9 @@ class MainViewModel(
         }
     }
 
-    fun onSelect(user: User) {
+    fun onSelect(tea: UiTea) {
+        viewModelScope.launch {
+            selectedTeaFlow.emit(tea)
+        }
     }
 }
