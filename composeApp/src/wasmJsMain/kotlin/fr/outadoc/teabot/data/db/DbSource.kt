@@ -12,13 +12,10 @@ import fr.outadoc.teabot.domain.model.Tea
 import fr.outadoc.teabot.domain.model.User
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -28,7 +25,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import openDatabase
 import kotlin.random.Random
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 @OptIn(ExperimentalWasmJsInterop::class)
@@ -109,11 +105,10 @@ class DbSource {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun getAll(): Flow<ImmutableList<User>> =
         refresh
             .onStart { refresh() }
-            .debounce(3.seconds)
             .mapLatest {
                 getOrCreateDb().transaction(STORE_USERS) {
                     objectStore(STORE_USERS)

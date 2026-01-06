@@ -29,7 +29,7 @@ class IrcChatSource(
                 while (isActive) {
                     when (val message = incoming.receive()) {
                         is Frame.Text -> {
-                            val lines = message.readText().lines()
+                            val lines = message.readText().lines().filter { it.isNotBlank() }
                             lines.forEach { line ->
                                 println(line)
 
