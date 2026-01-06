@@ -3,8 +3,15 @@ package fr.outadoc.teabot.data.db
 import Database
 import KeyPath
 import com.juul.indexeddb.external.IDBKey
-import fr.outadoc.teabot.domain.Message
+import fr.outadoc.teabot.data.db.model.DbMessage
+import fr.outadoc.teabot.data.db.model.DbTea
+import fr.outadoc.teabot.data.db.model.DbUser
+import fr.outadoc.teabot.data.irc.model.ChatMessage
+import fr.outadoc.teabot.domain.model.Message
+import fr.outadoc.teabot.domain.model.Tea
+import fr.outadoc.teabot.domain.model.User
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,7 +27,7 @@ class DbSource {
     private val mutex = Mutex()
     private var database: Database? = null
 
-    private val additions = MutableSharedFlow<Message>()
+    private val additions = MutableSharedFlow<DbMessage>()
 
     suspend fun getOrCreateDb(): Database {
         database?.let { return it }
@@ -28,12 +35,6 @@ class DbSource {
             database?.let { return it }
             return openDatabase(DB_NAME, 1) { database, oldVersion, newVersion ->
                 if (oldVersion < 1) {
-                    database.createObjectStore(STORE_MESSAGES, KeyPath("message_id")).apply {
-                        createIndex("message_id", KeyPath("message_id"), unique = true)
-                        createIndex("sent_at_iso", KeyPath("sent_at_iso"), unique = false)
-                        createIndex("user_id", KeyPath("user_id"), unique = false)
-                    }
-
                     database.createObjectStore(STORE_USERS, KeyPath("user_id")).apply {
                         createIndex("user_id", KeyPath("user_id"), unique = false)
                     }
@@ -43,44 +44,90 @@ class DbSource {
     }
 
     @OptIn(ExperimentalWasmJsInterop::class)
-    suspend fun saveMessage(message: Message) {
-        getOrCreateDb().writeTransaction(STORE_MESSAGES) {
-            val store = objectStore(STORE_MESSAGES)
+    suspend fun saveMessage(message: ChatMessage) {
+        getOrCreateDb().writeTransaction(STORE_USERS) {
+            val store = objectStore(STORE_USERS)
 
-            val existingUser = store.get(IDBKey(message.userId)) as JsonUser?
-            val user = existingUser
-                ?: jso<JsonUser>().apply {
-                    user_id = message.userId
-                    user_name = message.userName
-                }
+            val existingUser: DbUser? =
+                store.get(IDBKey(message.userId)) as DbUser?
 
-            val newMessage =
-                jso<JsonMessage>().apply {
+            val user: DbUser =
+                existingUser
+                    ?: jso<DbUser>().apply {
+                        user_id = message.userId
+                        user_name = message.userName
+                        teas = JsArray()
+                    }
+
+            // Find latest unarchived tea
+            val existingTea: DbTea? =
+                user.teas
+                    .toList()
+                    .filter { tea -> !tea.is_archived }
+                    .maxByOrNull { tea -> tea.sent_at_ts }
+
+            val tea: DbTea =
+                existingTea
+                    ?: jso<DbTea>().apply {
+                        is_archived = false
+                        sent_at_ts = message.sentAt.toEpochMilliseconds()
+                        messages = JsArray()
+                    }
+
+            val newMessage: DbMessage =
+                jso<DbMessage>().apply {
                     message_id = message.messageId
-                    sent_at_iso = message.sentAt.toString()
+                    sent_at_ts = message.sentAt.toEpochMilliseconds()
                     text = message.text
                 }
 
+            tea.messages =
+                tea.messages
+                    .toList()
+                    .toPersistentList()
+                    .add(newMessage)
+                    .toJsArray()
+
             additions.emit(message)
+
             store.add(newMessage)
         }
     }
 
-    fun getAll(): Flow<ImmutableList<Message>> =
+    fun getAll(): Flow<ImmutableList<User>> =
         flow {
             var list =
-                getOrCreateDb().transaction(STORE_MESSAGES) {
-                    objectStore(STORE_MESSAGES)
+                getOrCreateDb().transaction(STORE_USERS) {
+                    objectStore(STORE_USERS)
                         .index("sent_at_iso")
                         .openCursor()
-                        .map { it.value as JsonMessage }
-                        .map {
-                            Message(
-                                userId = it.user_id,
-                                userName = it.user_name,
-                                messageId = it.message_id,
-                                sentAt = Instant.parse(it.sent_at_iso),
-                                text = it.text,
+                        .map { it.value as DbUser }
+                        .map { user ->
+                            User(
+                                userId = user.user_id,
+                                userName = user.user_name,
+                                teas =
+                                    user.teas
+                                        .toList()
+                                        .map { tea ->
+                                            Tea(
+                                                sentAt = Instant.fromEpochMilliseconds(tea.sent_at_ts),
+                                                isArchived = tea.is_archived,
+                                                messages =
+                                                    tea.messages
+                                                        .toList()
+                                                        .map { message ->
+                                                            Message(
+                                                                messageId = message.message_id,
+                                                                sentAt =
+                                                                    Instant.fromEpochMilliseconds(
+                                                                        message.sent_at_ts,
+                                                                    ),
+                                                                text = message.text,
+                                                            )
+                                                        }.toImmutableList(),
+                                            )
+                                        }.toImmutableList(),
                             )
                         }.toList()
                         .toPersistentList()
@@ -96,7 +143,6 @@ class DbSource {
 
     private companion object {
         const val DB_NAME = "teabot-db"
-        const val STORE_MESSAGES = "messages"
         const val STORE_USERS = "users"
     }
 }

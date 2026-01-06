@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import fr.outadoc.teabot.AppConstants
 import fr.outadoc.teabot.data.db.DbSource
 import fr.outadoc.teabot.domain.ChatSource
-import fr.outadoc.teabot.domain.Message
+import fr.outadoc.teabot.domain.model.Message
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers

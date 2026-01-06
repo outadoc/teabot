@@ -1,8 +1,8 @@
-package fr.outadoc.teabot.domain
+package fr.outadoc.teabot.data.irc.model
 
 import kotlin.time.Instant
 
-data class Message(
+data class ChatMessage(
     val userId: String,
     val userName: String,
     val messageId: String,

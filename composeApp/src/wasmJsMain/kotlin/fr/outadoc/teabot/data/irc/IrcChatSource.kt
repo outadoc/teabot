@@ -1,10 +1,10 @@
 package fr.outadoc.teabot.data.irc
 
+import fr.outadoc.teabot.data.irc.model.ChatMessage
 import fr.outadoc.teabot.data.irc.parser.irc.message.IrcMessageParser
 import fr.outadoc.teabot.data.irc.parser.irc.message.rfc1459.PingMessage
 import fr.outadoc.teabot.data.irc.parser.irc.message.rfc1459.PrivMsgMessage
 import fr.outadoc.teabot.domain.ChatSource
-import fr.outadoc.teabot.domain.Message
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.websocket.Frame
@@ -19,7 +19,7 @@ import kotlin.time.Instant
 class IrcChatSource(
     private val httpClient: HttpClient,
 ) : ChatSource {
-    override fun getMessages(channelUserName: String): Flow<Message> =
+    override fun getMessages(channelUserName: String): Flow<ChatMessage> =
         flow {
             httpClient.webSocket("wss://irc-ws.chat.twitch.tv:443") {
                 send("NICK justinfan${Random.nextInt(1000, 10_000)}")
@@ -40,7 +40,7 @@ class IrcChatSource(
 
                                     is IrcMessage.PrivMsg -> {
                                         emit(
-                                            Message(
+                                            ChatMessage(
                                                 userId = message.userId,
                                                 userName = message.userName,
                                                 messageId = message.messageId,
