@@ -39,7 +39,7 @@ fun App() {
                 }
 
                 LazyColumn {
-                    items(state.messages) { item ->
+                    items(state.users) { item ->
                         Text(item.toString())
                     }
                 }

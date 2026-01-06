@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import fr.outadoc.teabot.AppConstants
 import fr.outadoc.teabot.data.db.DbSource
 import fr.outadoc.teabot.domain.ChatSource
-import fr.outadoc.teabot.domain.model.Message
+import fr.outadoc.teabot.domain.model.User
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
@@ -21,13 +21,13 @@ class MainViewModel(
     private val dbSource: DbSource,
 ) : ViewModel() {
     data class State(
-        val messages: ImmutableList<Message> = persistentListOf(),
+        val users: ImmutableList<User> = persistentListOf(),
     )
 
     val state: StateFlow<State> =
         dbSource
             .getAll()
-            .map { messages -> State(messages = messages) }
+            .map { users -> State(users = users) }
             .flowOn(Dispatchers.Unconfined)
             .stateIn(
                 viewModelScope,

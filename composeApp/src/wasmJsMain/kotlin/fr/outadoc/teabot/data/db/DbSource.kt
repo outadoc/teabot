@@ -13,22 +13,28 @@ import fr.outadoc.teabot.domain.model.User
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import openDatabase
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 
 @OptIn(ExperimentalWasmJsInterop::class)
 class DbSource {
     private val mutex = Mutex()
     private var database: Database? = null
-
-    private val additions = MutableSharedFlow<DbMessage>()
+    private val refresh = MutableSharedFlow<Int>(replay = 1)
 
     suspend fun getOrCreateDb(): Database {
         database?.let { return it }
@@ -88,32 +94,33 @@ class DbSource {
                     .add(newMessage)
                     .toJsArray()
 
-            additions.emit(message)
+            store.add(user)
 
-            store.add(newMessage)
+            refresh()
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     fun getAll(): Flow<ImmutableList<User>> =
-        flow {
-            var list =
+        refresh
+            .onStart { refresh() }
+            .debounce(3.seconds)
+            .mapLatest {
                 getOrCreateDb().transaction(STORE_USERS) {
                     objectStore(STORE_USERS)
-                        .index("sent_at_iso")
                         .openCursor()
                         .map { it.value as DbUser }
                         .map { user -> user.toDomain() }
                         .toList()
                         .toPersistentList()
                 }
-
-            emit(list)
-
-            additions.collect { newMessage ->
-                list = list.add(newMessage)
-                emit(list)
+            }.onEach {
+                println("Reloading from db: ${it.count()} items")
             }
-        }
+
+    suspend fun refresh() {
+        refresh.emit(Random.nextInt())
+    }
 
     private fun DbUser.toDomain(): User =
         User(
