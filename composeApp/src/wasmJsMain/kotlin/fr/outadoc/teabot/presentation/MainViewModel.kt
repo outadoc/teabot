@@ -45,4 +45,7 @@ class MainViewModel(
                 }
         }
     }
+
+    fun onSelect(user: User) {
+    }
 }
