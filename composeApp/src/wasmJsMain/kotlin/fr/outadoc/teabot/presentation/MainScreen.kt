@@ -26,6 +26,7 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     scrollState: LazyListState = rememberLazyListState(),
     onSelect: (UiTea) -> Unit = {},
+    onArchivedChange: (UiTea, Boolean) -> Unit = { _, _ -> },
 ) {
     Scaffold(modifier = modifier) {
         Row {
@@ -34,10 +35,11 @@ fun MainScreen(
                     Modifier
                         .fillMaxHeight()
                         .width(300.dp),
+                scrollState = scrollState,
                 teaList = state.teaList,
                 selectedTea = state.selectedTea,
                 onSelect = onSelect,
-                scrollState = scrollState,
+                onArchivedChange = onArchivedChange,
             )
 
             VerticalScrollbar(

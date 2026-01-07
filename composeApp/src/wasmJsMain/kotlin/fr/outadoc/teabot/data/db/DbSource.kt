@@ -108,6 +108,14 @@ class DbSource {
         }
     }
 
+    suspend fun setTeaArchived(
+        userId: String,
+        sentAt: Instant,
+        isArchived: Boolean,
+    ) {
+        // TODO flip archived boolean
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getAll(): Flow<ImmutableList<User>> =
         refresh

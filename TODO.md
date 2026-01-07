@@ -2,9 +2,10 @@
 - [ ] Filtre par pseudo (champ de recherche)
 - [x] Résilience de la websocket
 - [ ] Filtrage sur le mot !thé
-- [ ] Formatage des dates/heures
+- [x] Formatage des dates/heures
 - [ ] Ajout de header / pied de page (crédits)
 - [ ] Bouton de lien vers un profil Twitch
 - [x] État selected des thés
 - [ ] Petit disclaimer "postez votre thé en préfixant **chaque message** avec !thé"
 - [x] Clean du HTML avec favicon
+- [ ] Rework DB pour être tea-based

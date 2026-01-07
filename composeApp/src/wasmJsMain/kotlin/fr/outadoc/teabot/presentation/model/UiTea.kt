@@ -6,8 +6,8 @@ import kotlin.time.Instant
 
 @Immutable
 data class UiTea(
+    val user: UiUser,
     val sentAt: Instant,
     val isArchived: Boolean,
-    val user: UiUser,
     val messages: ImmutableList<UiMessage>,
 )

@@ -25,6 +25,7 @@ fun App() {
             MainScreen(
                 state = state,
                 onSelect = viewModel::onSelect,
+                onArchivedChange = viewModel::onArchivedChange,
             )
         }
     }

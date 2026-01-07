@@ -95,4 +95,13 @@ class MainViewModel(
             selectedTeaFlow.emit(tea)
         }
     }
+
+    fun onArchivedChange(
+        tea: UiTea,
+        isArchived: Boolean,
+    ) {
+        viewModelScope.launch {
+            dbSource.setTeaArchived()
+        }
+    }
 }

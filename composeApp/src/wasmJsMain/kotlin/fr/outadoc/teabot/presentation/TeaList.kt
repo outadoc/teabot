@@ -16,6 +16,7 @@ fun TeaList(
     selectedTea: UiTea?,
     modifier: Modifier = Modifier,
     onSelect: (UiTea) -> Unit = {},
+    onArchivedChange: (UiTea, Boolean) -> Unit = { _, _ -> },
     scrollState: LazyListState = rememberLazyListState(),
 ) {
     LazyColumn(
@@ -27,12 +28,15 @@ fun TeaList(
             key = { tea -> "${tea.user.userId}-${tea.sentAt}" },
         ) { tea ->
             TeaItem(
-                tea = tea,
-                isSelected = tea == selectedTea,
                 modifier =
                     Modifier
                         .animateItem()
                         .clickable { onSelect(tea) },
+                tea = tea,
+                isSelected = tea == selectedTea,
+                onArchivedChange = { isArchived ->
+                    onArchivedChange(tea, isArchived)
+                },
             )
         }
     }
