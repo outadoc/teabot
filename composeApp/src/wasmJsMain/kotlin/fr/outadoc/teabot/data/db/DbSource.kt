@@ -5,12 +5,11 @@ import KeyPath
 import com.juul.indexeddb.external.IDBKey
 import fr.outadoc.teabot.data.db.model.DbMessage
 import fr.outadoc.teabot.data.db.model.DbTea
-import fr.outadoc.teabot.data.db.model.DbUser
 import fr.outadoc.teabot.data.irc.model.ChatMessage
 import fr.outadoc.teabot.domain.model.Message
 import fr.outadoc.teabot.domain.model.Tea
-import fr.outadoc.teabot.domain.model.User
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,8 +25,10 @@ import kotlinx.coroutines.sync.withLock
 import openDatabase
 import kotlin.random.Random
 import kotlin.time.Instant
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalWasmJsInterop::class)
+@OptIn(ExperimentalWasmJsInterop::class, ExperimentalUuidApi::class)
 class DbSource {
     private val mutex = Mutex()
     private var database: Database? = null
@@ -39,8 +40,10 @@ class DbSource {
             database?.let { return it }
             return openDatabase(DB_NAME, 1) { database, oldVersion, newVersion ->
                 if (oldVersion < 1) {
-                    database.createObjectStore(STORE_USERS, KeyPath("user_id")).apply {
-                        createIndex("user_id", KeyPath("user_id"), unique = true)
+                    database.createObjectStore(STORE_TEA, KeyPath("tea_id")).apply {
+                        createIndex("tea_id", KeyPath("tea_id"), unique = true)
+                        createIndex("user_id", KeyPath("user_id"), unique = false)
+                        createIndex("sent_at_ts", KeyPath("sent_at_ts"), unique = false)
                     }
                 }
             }.also { database = it }
@@ -48,9 +51,7 @@ class DbSource {
     }
 
     suspend fun saveMessage(message: ChatMessage) {
-        getOrCreateDb().writeTransaction(STORE_USERS) {
-            val store = objectStore(STORE_USERS)
-
+        getOrCreateDb().writeTransaction(STORE_TEA) {
             val newMessage =
                 Message(
                     messageId = message.messageId,
@@ -58,51 +59,40 @@ class DbSource {
                     text = message.text,
                 )
 
-            val existingUser: User? =
-                (store.get(IDBKey(message.userId)) as DbUser?)
-                    ?.toDomain()
-
-            val user: User =
-                existingUser
-                    ?: User(
-                        userId = message.userId,
-                        userName = message.userName,
-                        teas = persistentListOf(),
-                    )
+            val store = objectStore(STORE_TEA)
+            val existingTea: PersistentList<Tea> =
+                store
+                    .index("user_id")
+                    .openCursor(IDBKey(message.userId))
+                    .map { row -> row.value as DbTea }
+                    .map { tea -> tea.toDomain() }
+                    .toList()
+                    .toPersistentList()
 
             // If the last tea is unarchived, we'll add the message to it.
             // Otherwise, we'll prepare some new tea.
-            val hotTea: Tea? =
-                user.teas.firstOrNull()?.takeIf { tea -> !tea.isArchived }
+            val hotTea: Tea =
+                existingTea
+                    .firstOrNull()
+                    ?.takeIf { tea -> !tea.isArchived }
+                    ?.let { latestTea ->
+                        latestTea.copy(
+                            messages =
+                                latestTea.messages
+                                    .removeAll { it.messageId == newMessage.messageId }
+                                    .add(newMessage),
+                        )
+                    }
+                    ?: Tea(
+                        teaId = Uuid.random().toHexString(),
+                        userId = message.userId,
+                        userName = message.userName,
+                        isArchived = false,
+                        sentAt = message.sentAt,
+                        messages = persistentListOf(newMessage),
+                    )
 
-            val updatedUser =
-                user.copy(
-                    teas =
-                        if (hotTea == null) {
-                            user.teas.add(
-                                0,
-                                Tea(
-                                    isArchived = false,
-                                    sentAt = message.sentAt,
-                                    messages = persistentListOf(newMessage),
-                                ),
-                            )
-                        } else {
-                            user.teas
-                                .removeAt(0)
-                                .add(
-                                    0,
-                                    hotTea.copy(
-                                        messages =
-                                            hotTea.messages
-                                                .removeAll { it.messageId == newMessage.messageId }
-                                                .add(newMessage),
-                                    ),
-                                )
-                        },
-                )
-
-            store.put(updatedUser.toData())
+            store.put(hotTea.toData())
 
             refresh()
         }
@@ -117,16 +107,18 @@ class DbSource {
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun getAll(): Flow<ImmutableList<User>> =
+    fun getAll(): Flow<ImmutableList<Tea>> =
         refresh
             .onStart { refresh() }
             .mapLatest {
-                getOrCreateDb().transaction(STORE_USERS) {
-                    objectStore(STORE_USERS)
+                getOrCreateDb().transaction(STORE_TEA) {
+                    objectStore(STORE_TEA)
+                        // .index("sent_at_ts")
                         .openCursor()
-                        .map { it.value as DbUser }
-                        .map { user -> user.toDomain() }
+                        .map { row -> row.value as DbTea }
+                        .map { tea -> tea.toDomain() }
                         .toList()
+                        .sortedByDescending { tea -> tea.sentAt }
                         .toPersistentList()
                 }
             }.onEach {
@@ -137,20 +129,11 @@ class DbSource {
         refresh.emit(Random.nextInt())
     }
 
-    private fun DbUser.toDomain(): User =
-        User(
-            userId = user_id,
-            userName = user_name,
-            teas =
-                teas
-                    .toList()
-                    .map { tea -> tea.toDomain() }
-                    .sortedByDescending { tea -> tea.sentAt }
-                    .toPersistentList(),
-        )
-
     private fun DbTea.toDomain(): Tea =
         Tea(
+            teaId = tea_id,
+            userId = user_id,
+            userName = user_name,
             sentAt = Instant.fromEpochMilliseconds(sent_at_ts),
             isArchived = is_archived,
             messages =
@@ -177,6 +160,9 @@ class DbSource {
 
     private fun Tea.toData(): DbTea =
         jso<DbTea>().apply {
+            tea_id = this@toData.teaId
+            user_id = this@toData.userId
+            user_name = this@toData.userName
             is_archived = this@toData.isArchived
             sent_at_ts = this@toData.sentAt.toEpochMilliseconds()
             messages =
@@ -187,20 +173,8 @@ class DbSource {
                     .toJsArray()
         }
 
-    private fun User.toData(): DbUser =
-        jso<DbUser>().apply {
-            user_id = this@toData.userId
-            user_name = this@toData.userName
-            teas =
-                this@toData
-                    .teas
-                    .sortedByDescending { tea -> tea.sentAt }
-                    .map { tea -> tea.toData() }
-                    .toJsArray()
-        }
-
     private companion object {
         const val DB_NAME = "teabot-db"
-        const val STORE_USERS = "users"
+        const val STORE_TEA = "tea"
     }
 }

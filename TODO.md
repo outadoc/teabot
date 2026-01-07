@@ -8,4 +8,5 @@
 - [x] État selected des thés
 - [ ] Petit disclaimer "postez votre thé en préfixant **chaque message** avec !thé"
 - [x] Clean du HTML avec favicon
-- [ ] Rework DB pour être tea-based
+- [x] Rework DB pour être tea-based
+- [ ] Fonte sympa ?

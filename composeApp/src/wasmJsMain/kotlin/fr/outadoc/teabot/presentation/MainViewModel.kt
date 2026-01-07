@@ -36,34 +36,32 @@ class MainViewModel(
         combine(
             dbSource.getAll(),
             selectedTeaFlow,
-        ) { users, selectedTea ->
+        ) { teaList, selectedTea ->
             State(
                 selectedTea = selectedTea,
                 teaList =
-                    users
-                        .flatMap { user ->
-                            user.teas.map { tea ->
-                                UiTea(
-                                    sentAt = tea.sentAt,
-                                    isArchived = tea.isArchived,
-                                    user =
-                                        UiUser(
-                                            userId = user.userId,
-                                            userName = user.userName,
-                                        ),
-                                    messages =
-                                        tea.messages
-                                            .map { message ->
-                                                UiMessage(
-                                                    messageId = message.messageId,
-                                                    sentAt = message.sentAt,
-                                                    text = message.text,
-                                                )
-                                            }.toPersistentList(),
-                                )
-                            }
-                        }.sortedByDescending { tea -> tea.sentAt }
-                        .toPersistentList(),
+                    teaList
+                        .map { tea ->
+                            UiTea(
+                                teaId = tea.teaId,
+                                sentAt = tea.sentAt,
+                                isArchived = tea.isArchived,
+                                user =
+                                    UiUser(
+                                        userId = tea.userId,
+                                        userName = tea.userName,
+                                    ),
+                                messages =
+                                    tea.messages
+                                        .map { message ->
+                                            UiMessage(
+                                                messageId = message.messageId,
+                                                sentAt = message.sentAt,
+                                                text = message.text,
+                                            )
+                                        }.toPersistentList(),
+                            )
+                        }.toPersistentList(),
             )
         }.stateIn(
             viewModelScope,
@@ -101,7 +99,6 @@ class MainViewModel(
         isArchived: Boolean,
     ) {
         viewModelScope.launch {
-            dbSource.setTeaArchived()
         }
     }
 }

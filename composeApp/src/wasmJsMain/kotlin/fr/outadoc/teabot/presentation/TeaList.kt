@@ -25,7 +25,7 @@ fun TeaList(
     ) {
         items(
             items = teaList,
-            key = { tea -> "${tea.user.userId}-${tea.sentAt}" },
+            key = { tea -> tea.teaId },
         ) { tea ->
             TeaItem(
                 modifier =
