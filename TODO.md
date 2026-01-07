@@ -10,3 +10,4 @@
 - [ ] Bouton de lien vers un profil Twitch
 - [ ] Petit disclaimer "postez votre thé en préfixant **chaque message** avec !thé"
 - [ ] Fonte sympa ?
+- [ ] Auto-scroll to top when on top
