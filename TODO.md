@@ -1,4 +1,4 @@
-- [ ] Archivage des conversations
+- [x] Archivage des conversations
 - [ ] Filtre par pseudo (champ de recherche)
 - [x] Résilience de la websocket
 - [ ] Filtrage sur le mot !thé

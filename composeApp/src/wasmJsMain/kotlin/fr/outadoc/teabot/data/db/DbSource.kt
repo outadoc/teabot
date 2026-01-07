@@ -9,7 +9,6 @@ import fr.outadoc.teabot.data.irc.model.ChatMessage
 import fr.outadoc.teabot.domain.model.Message
 import fr.outadoc.teabot.domain.model.Tea
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -60,14 +59,13 @@ class DbSource {
                 )
 
             val store = objectStore(STORE_TEA)
-            val existingTea: PersistentList<Tea> =
+            val existingTea: List<Tea> =
                 store
                     .index("user_id")
-                    .openCursor(IDBKey(message.userId))
-                    .map { row -> row.value as DbTea }
-                    .map { tea -> tea.toDomain() }
+                    .openCursor(IDBKey(message.userId), autoContinue = true)
+                    .map { row -> (row.value as DbTea).toDomain() }
                     .toList()
-                    .toPersistentList()
+                    .sortedByDescending { tea -> tea.sentAt }
 
             // If the last tea is unarchived, we'll add the message to it.
             // Otherwise, we'll prepare some new tea.
@@ -99,11 +97,25 @@ class DbSource {
     }
 
     suspend fun setTeaArchived(
-        userId: String,
-        sentAt: Instant,
+        teaId: String,
         isArchived: Boolean,
     ) {
-        // TODO flip archived boolean
+        getOrCreateDb().writeTransaction(STORE_TEA) {
+            val store = objectStore(STORE_TEA)
+
+            val tea: DbTea? =
+                store.get(IDBKey(teaId)) as DbTea?
+
+            checkNotNull(tea) {
+                "This tea was not found in the database"
+            }
+
+            tea.is_archived = isArchived
+
+            store.put(tea)
+
+            refresh()
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -113,10 +125,8 @@ class DbSource {
             .mapLatest {
                 getOrCreateDb().transaction(STORE_TEA) {
                     objectStore(STORE_TEA)
-                        // .index("sent_at_ts")
-                        .openCursor()
-                        .map { row -> row.value as DbTea }
-                        .map { tea -> tea.toDomain() }
+                        .openCursor(autoContinue = true)
+                        .map { row -> (row.value as DbTea).toDomain() }
                         .toList()
                         .sortedByDescending { tea -> tea.sentAt }
                         .toPersistentList()

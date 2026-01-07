@@ -99,6 +99,7 @@ class MainViewModel(
         isArchived: Boolean,
     ) {
         viewModelScope.launch {
+            dbSource.setTeaArchived(tea.teaId, isArchived)
         }
     }
 }
