@@ -11,12 +11,15 @@ import fr.outadoc.teabot.presentation.model.UiUser
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class MainViewModel(
     private val chatSource: ChatSource,
@@ -70,12 +73,20 @@ class MainViewModel(
 
     fun onStart() {
         viewModelScope.launch {
-            chatSource
-                .getMessages(AppConstants.CHANNEL_USERNAME)
-                .collect { message ->
-                    println(message)
-                    dbSource.saveMessage(message)
+            while (isActive) {
+                try {
+                    chatSource
+                        .getMessages(AppConstants.CHANNEL_USERNAME)
+                        .collect { message ->
+                            println(message)
+                            dbSource.saveMessage(message)
+                        }
+                } catch (e: Exception) {
+                    // Auto-reconnect on exception
+                    e.printStackTrace()
+                    delay(2.seconds)
                 }
+            }
         }
     }
 

@@ -1,6 +1,6 @@
 - [ ] Archivage des conversations
 - [ ] Filtre par pseudo (champ de recherche)
-- [ ] Résilience de la websocket
+- [x] Résilience de la websocket
 - [ ] Filtrage sur le mot !thé
 - [ ] Formatage des dates/heures
 - [ ] Ajout de header / pied de page (crédits)
