@@ -5,13 +5,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import fr.outadoc.teabot.presentation.theme.AppTheme
 import org.jetbrains.compose.resources.imageResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import teabot.composeapp.generated.resources.Res
@@ -45,9 +45,7 @@ fun EmptyScreen(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun EmptyScreenPreview() {
-    MaterialTheme {
-        Surface {
-            EmptyScreen()
-        }
+    AppTheme {
+        EmptyScreen()
     }
 }
