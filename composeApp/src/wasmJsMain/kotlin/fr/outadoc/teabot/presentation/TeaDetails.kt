@@ -35,17 +35,21 @@ fun TeaDetails(
                     tea.messages,
                     key = { message -> message.messageId },
                 ) { message ->
-                    Text(
-                        message.sentAt
-                            .toLocalDateTime(TimeZone.currentSystemDefault())
-                            .toString(),
-                        style = MaterialTheme.typography.labelSmall,
-                    )
+                    Column(
+                        modifier = Modifier.animateItem(),
+                    ) {
+                        Text(
+                            message.sentAt
+                                .toLocalDateTime(TimeZone.currentSystemDefault())
+                                .toString(),
+                            style = MaterialTheme.typography.labelSmall,
+                        )
 
-                    Text(
-                        message.text,
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
+                        Text(
+                            message.text,
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
                 }
             }
         }

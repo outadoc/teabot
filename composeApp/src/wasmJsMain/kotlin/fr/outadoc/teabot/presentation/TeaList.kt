@@ -5,18 +5,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import fr.outadoc.teabot.presentation.model.UiTea
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun TeaList(
     teaList: ImmutableList<UiTea>,
+    selectedTea: UiTea?,
     modifier: Modifier = Modifier,
     onSelect: (UiTea) -> Unit = {},
     scrollState: LazyListState = rememberLazyListState(),
@@ -29,18 +26,13 @@ fun TeaList(
             items = teaList,
             key = { tea -> "${tea.user.userId}-${tea.sentAt}" },
         ) { tea ->
-            ListItem(
-                modifier = Modifier.clickable { onSelect(tea) },
-                headlineContent = {
-                    Text(tea.user.userName)
-                },
-                supportingContent = {
-                    Text(
-                        tea.sentAt
-                            .toLocalDateTime(TimeZone.currentSystemDefault())
-                            .toString(),
-                    )
-                },
+            SingleTea(
+                modifier =
+                    Modifier
+                        .animateItem()
+                        .clickable { onSelect(tea) },
+                tea = tea,
+                isSelected = tea == selectedTea,
             )
         }
     }

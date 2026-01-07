@@ -35,6 +35,7 @@ fun MainScreen(
                         .fillMaxHeight()
                         .width(300.dp),
                 teaList = state.teaList,
+                selectedTea = state.selectedTea,
                 onSelect = onSelect,
                 scrollState = scrollState,
             )

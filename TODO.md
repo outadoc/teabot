@@ -5,5 +5,6 @@
 - [ ] Formatage des dates/heures
 - [ ] Ajout de header / pied de page (crédits)
 - [ ] Bouton de lien vers un profil Twitch
-- [ ] État selected des thés
+- [x] État selected des thés
 - [ ] Petit disclaimer "postez votre thé en préfixant **chaque message** avec !thé"
+- [ ] Clean du HTML avec favicon
