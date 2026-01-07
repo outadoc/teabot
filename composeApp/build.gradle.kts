@@ -52,3 +52,7 @@ kotlin {
         }
     }
 }
+
+compose.resources {
+    packageOfResClass = "fr.outadoc.teabot.generated"
+}

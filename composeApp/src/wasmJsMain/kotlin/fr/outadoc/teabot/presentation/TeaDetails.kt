@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.outadoc.teabot.presentation.model.UiTea
+import fr.outadoc.teabot.presentation.utils.localized
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -41,7 +42,7 @@ fun TeaDetails(
                         Text(
                             message.sentAt
                                 .toLocalDateTime(TimeZone.currentSystemDefault())
-                                .toString(),
+                                .localized(),
                             style = MaterialTheme.typography.labelSmall,
                         )
 

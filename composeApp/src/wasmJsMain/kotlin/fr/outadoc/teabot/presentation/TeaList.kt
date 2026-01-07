@@ -26,13 +26,13 @@ fun TeaList(
             items = teaList,
             key = { tea -> "${tea.user.userId}-${tea.sentAt}" },
         ) { tea ->
-            SingleTea(
+            TeaItem(
+                tea = tea,
+                isSelected = tea == selectedTea,
                 modifier =
                     Modifier
                         .animateItem()
                         .clickable { onSelect(tea) },
-                tea = tea,
-                isSelected = tea == selectedTea,
             )
         }
     }
