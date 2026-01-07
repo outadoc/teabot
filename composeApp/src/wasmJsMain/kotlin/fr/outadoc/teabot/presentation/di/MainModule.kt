@@ -1,5 +1,6 @@
 package fr.outadoc.teabot.presentation.di
 
+import fr.outadoc.teabot.AppConfig
 import fr.outadoc.teabot.data.db.DbSource
 import fr.outadoc.teabot.data.irc.IrcChatSource
 import fr.outadoc.teabot.domain.ChatSource
@@ -12,6 +13,20 @@ import org.koin.dsl.module
 val MainModule =
     module {
         single {
+            AppConfig(
+                broadcasterUsername = "angledroit",
+                messagePrefixes = emptySet(),
+            )
+        }
+
+//        single {
+//            AppConfig(
+//                broadcasterUsername = "outadoc",
+//                messagePrefixes = setOf("!the", "!thé"),
+//            )
+//        }
+
+        single {
             HttpClient {
                 install(WebSockets) {
                     pingIntervalMillis = 10_000
@@ -21,5 +36,5 @@ val MainModule =
 
         single<ChatSource> { IrcChatSource(get()) }
         single<DbSource> { DbSource() }
-        viewModel { MainViewModel(get(), get()) }
+        viewModel { MainViewModel(get(), get(), get()) }
     }

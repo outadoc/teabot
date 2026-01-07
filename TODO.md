@@ -1,7 +1,7 @@
 - [x] Archivage des conversations
 - [ ] Filtre par pseudo (champ de recherche)
 - [x] Résilience de la websocket
-- [ ] Filtrage sur le mot !thé
+- [x] Filtrage sur le mot !thé
 - [x] Formatage des dates/heures
 - [ ] Ajout de header / pied de page (crédits)
 - [ ] Bouton de lien vers un profil Twitch

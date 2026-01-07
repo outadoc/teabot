@@ -15,8 +15,8 @@ fun TeaList(
     teaList: ImmutableList<UiTea>,
     selectedTea: UiTea?,
     modifier: Modifier = Modifier,
-    onSelect: (UiTea) -> Unit = {},
-    onArchivedChange: (UiTea, Boolean) -> Unit = { _, _ -> },
+    onSelect: (teaId: String) -> Unit = {},
+    onArchivedChange: (teaId: String, Boolean) -> Unit = { _, _ -> },
     scrollState: LazyListState = rememberLazyListState(),
 ) {
     LazyColumn(
@@ -31,11 +31,13 @@ fun TeaList(
                 modifier =
                     Modifier
                         .animateItem()
-                        .clickable { onSelect(tea) },
+                        .clickable {
+                            onSelect(tea.teaId)
+                        },
                 tea = tea,
                 isSelected = tea == selectedTea,
                 onArchivedChange = { isArchived ->
-                    onArchivedChange(tea, isArchived)
+                    onArchivedChange(tea.teaId, isArchived)
                 },
             )
         }

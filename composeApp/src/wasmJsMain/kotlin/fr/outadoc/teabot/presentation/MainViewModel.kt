@@ -2,8 +2,9 @@ package fr.outadoc.teabot.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import fr.outadoc.teabot.AppConstants
+import fr.outadoc.teabot.AppConfig
 import fr.outadoc.teabot.data.db.DbSource
+import fr.outadoc.teabot.data.irc.model.ChatMessage
 import fr.outadoc.teabot.domain.ChatSource
 import fr.outadoc.teabot.presentation.model.UiMessage
 import fr.outadoc.teabot.presentation.model.UiTea
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 class MainViewModel(
+    private val appConfig: AppConfig,
     private val chatSource: ChatSource,
     private val dbSource: DbSource,
 ) : ViewModel() {
@@ -30,38 +32,47 @@ class MainViewModel(
         val teaList: ImmutableList<UiTea> = persistentListOf(),
     )
 
-    private val selectedTeaFlow = MutableStateFlow<UiTea?>(null)
+    private val selectedTeaFlow = MutableStateFlow<String?>(null)
 
     val state: StateFlow<State> =
         combine(
             dbSource.getAll(),
             selectedTeaFlow,
-        ) { teaList, selectedTea ->
+        ) { teaList, selectedTeaId ->
+            val prefixes = appConfig.messagePrefixes.map { "$it " }
+            val list =
+                teaList
+                    .map { tea ->
+                        UiTea(
+                            teaId = tea.teaId,
+                            sentAt = tea.sentAt,
+                            isArchived = tea.isArchived,
+                            user =
+                                UiUser(
+                                    userId = tea.userId,
+                                    userName = tea.userName,
+                                ),
+                            messages =
+                                tea.messages
+                                    .map { message ->
+                                        UiMessage(
+                                            messageId = message.messageId,
+                                            sentAt = message.sentAt,
+                                            text =
+                                                prefixes.fold(message.text) { acc, prefix ->
+                                                    acc.removePrefix(prefix)
+                                                },
+                                        )
+                                    }.toPersistentList(),
+                        )
+                    }.toPersistentList()
+
             State(
-                selectedTea = selectedTea,
-                teaList =
-                    teaList
-                        .map { tea ->
-                            UiTea(
-                                teaId = tea.teaId,
-                                sentAt = tea.sentAt,
-                                isArchived = tea.isArchived,
-                                user =
-                                    UiUser(
-                                        userId = tea.userId,
-                                        userName = tea.userName,
-                                    ),
-                                messages =
-                                    tea.messages
-                                        .map { message ->
-                                            UiMessage(
-                                                messageId = message.messageId,
-                                                sentAt = message.sentAt,
-                                                text = message.text,
-                                            )
-                                        }.toPersistentList(),
-                            )
-                        }.toPersistentList(),
+                teaList = list,
+                selectedTea =
+                    list.firstOrNull { tea ->
+                        tea.teaId == selectedTeaId
+                    },
             )
         }.stateIn(
             viewModelScope,
@@ -74,10 +85,14 @@ class MainViewModel(
             while (isActive) {
                 try {
                     chatSource
-                        .getMessages(AppConstants.CHANNEL_USERNAME)
+                        .getMessages(appConfig.broadcasterUsername)
                         .collect { message ->
                             println(message)
-                            dbSource.saveMessage(message)
+
+                            if (messageMatches(message)) {
+                                println("Message matches, saving it")
+                                dbSource.saveMessage(message)
+                            }
                         }
                 } catch (e: Exception) {
                     // Auto-reconnect on exception
@@ -88,18 +103,23 @@ class MainViewModel(
         }
     }
 
-    fun onSelect(tea: UiTea) {
+    private fun messageMatches(message: ChatMessage): Boolean {
+        val firstWord = message.text.takeWhile { it != ' ' }.lowercase()
+        return appConfig.messagePrefixes.isEmpty() || appConfig.messagePrefixes.contains(firstWord)
+    }
+
+    fun onSelect(teaId: String) {
         viewModelScope.launch {
-            selectedTeaFlow.emit(tea)
+            selectedTeaFlow.emit(teaId)
         }
     }
 
     fun onArchivedChange(
-        tea: UiTea,
+        teaId: String,
         isArchived: Boolean,
     ) {
         viewModelScope.launch {
-            dbSource.setTeaArchived(tea.teaId, isArchived)
+            dbSource.setTeaArchived(teaId, isArchived)
         }
     }
 }

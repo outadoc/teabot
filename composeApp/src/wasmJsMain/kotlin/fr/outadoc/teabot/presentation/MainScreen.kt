@@ -18,15 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import fr.outadoc.teabot.presentation.model.UiTea
 
 @Composable
 fun MainScreen(
     state: MainViewModel.State,
     modifier: Modifier = Modifier,
     scrollState: LazyListState = rememberLazyListState(),
-    onSelect: (UiTea) -> Unit = {},
-    onArchivedChange: (UiTea, Boolean) -> Unit = { _, _ -> },
+    onSelect: (teaId: String) -> Unit = {},
+    onArchivedChange: (teaId: String, Boolean) -> Unit = { _, _ -> },
 ) {
     Scaffold(modifier = modifier) {
         Row {
