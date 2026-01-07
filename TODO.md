@@ -7,4 +7,4 @@
 - [ ] Bouton de lien vers un profil Twitch
 - [x] État selected des thés
 - [ ] Petit disclaimer "postez votre thé en préfixant **chaque message** avec !thé"
-- [ ] Clean du HTML avec favicon
+- [x] Clean du HTML avec favicon
