@@ -8,12 +8,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.outadoc.teabot.generated.Res
+import fr.outadoc.teabot.generated.search_clear_cd
 import fr.outadoc.teabot.generated.search_hint
 import fr.outadoc.teabot.presentation.model.UiTea
 import kotlinx.collections.immutable.ImmutableList
@@ -42,6 +47,18 @@ fun TeaList(
             onValueChange = onQueryChange,
             label = {
                 Text(stringResource(Res.string.search_hint))
+            },
+            trailingIcon = {
+                if (query.isNotEmpty()) {
+                    IconButton(
+                        onClick = { onQueryChange("") },
+                    ) {
+                        Icon(
+                            Icons.Default.Clear,
+                            contentDescription = stringResource(Res.string.search_clear_cd),
+                        )
+                    }
+                }
             },
         )
 
