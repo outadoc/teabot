@@ -28,6 +28,7 @@ import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.outadoc.teabot.generated.Res
@@ -52,6 +53,17 @@ fun TeaList(
     onHelpVisibilityChange: (Boolean) -> Unit = {},
     scrollState: LazyListState = rememberLazyListState(),
 ) {
+    LaunchedEffect(query) {
+        if (query.isEmpty() && selectedTea != null) {
+            teaList
+                .indexOfFirst { tea -> tea == selectedTea }
+                .takeIf { idx -> idx > 0 }
+                ?.let { idx ->
+                    scrollState.scrollToItem(idx)
+                }
+        }
+    }
+
     Column(
         modifier = modifier,
     ) {
