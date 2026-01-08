@@ -44,16 +44,6 @@ fun MainScreen(
                 onQueryChange = onQueryChange,
             )
 
-            VerticalScrollbar(
-                modifier = Modifier.fillMaxHeight(),
-                adapter = rememberScrollbarAdapter(scrollState),
-                style =
-                    defaultScrollbarStyle().copy(
-                        hoverColor = MaterialTheme.colorScheme.surfaceTint,
-                        unhoverColor = MaterialTheme.colorScheme.surfaceTint,
-                    ),
-            )
-
             Column(
                 modifier =
                     Modifier
