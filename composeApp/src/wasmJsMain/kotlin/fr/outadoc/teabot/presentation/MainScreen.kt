@@ -64,7 +64,7 @@ fun MainScreen(
                         tea = tea,
                     )
                 } else {
-                    EmptyScreen(
+                    EmptyDetails(
                         modifier = Modifier.fillMaxSize(),
                     )
                 }

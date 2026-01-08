@@ -12,14 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import fr.outadoc.teabot.generated.Res
-import fr.outadoc.teabot.generated.empty_icon_cd
-import fr.outadoc.teabot.generated.empty_title
-import fr.outadoc.teabot.generated.sip
+import fr.outadoc.teabot.generated.grumpy
+import fr.outadoc.teabot.generated.list_empty_title
 import org.jetbrains.compose.resources.imageResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun EmptyScreen(modifier: Modifier = Modifier) {
+fun EmptyList(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -30,13 +29,13 @@ fun EmptyScreen(modifier: Modifier = Modifier) {
             ),
     ) {
         Image(
-            bitmap = imageResource(Res.drawable.sip),
-            contentDescription = stringResource(Res.string.empty_icon_cd),
+            bitmap = imageResource(Res.drawable.grumpy),
+            contentDescription = null,
         )
 
         Text(
             modifier = Modifier.widthIn(max = 400.dp),
-            text = stringResource(Res.string.empty_title),
+            text = stringResource(Res.string.list_empty_title),
             style = MaterialTheme.typography.headlineLarge,
             textAlign = TextAlign.Center,
         )

@@ -14,7 +14,7 @@ val MainModule =
     module {
         single {
             AppConfig(
-                broadcasterUsername = "antoinedaniel",
+                broadcasterUsername = "outadoc",
                 displayPrefix = "!thé",
                 matchedPrefixes = emptySet(),
             )

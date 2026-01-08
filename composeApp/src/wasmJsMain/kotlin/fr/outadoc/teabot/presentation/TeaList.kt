@@ -62,68 +62,77 @@ fun TeaList(
             },
         )
 
-        TextField(
-            modifier =
-                Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth(),
-            value = query,
-            onValueChange = onQueryChange,
-            label = {
-                Text(stringResource(Res.string.search_hint))
-            },
-            trailingIcon = {
-                if (query.isNotEmpty()) {
-                    IconButton(
-                        onClick = { onQueryChange("") },
-                    ) {
-                        Icon(
-                            Icons.Default.Clear,
-                            contentDescription = stringResource(Res.string.search_clear_cd),
-                        )
-                    }
-                }
-            },
-        )
-
-        Row(
-            horizontalArrangement = Arrangement.End,
-        ) {
-            LazyColumn(
-                modifier =
-                    Modifier.weight(
-                        weight = 1f,
-                        fill = true,
-                    ),
-                state = scrollState,
-            ) {
-                items(
-                    items = teaList,
-                    key = { tea -> tea.teaId },
-                ) { tea ->
-                    TeaItem(
-                        modifier =
-                            Modifier
-                                .animateItem()
-                                .clickable {
-                                    onSelect(tea.teaId)
-                                },
-                        tea = tea,
-                        isSelected = tea == selectedTea,
-                        onArchivedChange = { isArchived ->
-                            onArchivedChange(tea.teaId, isArchived)
-                        },
-                    )
-                }
-            }
-
-            VerticalScrollbar(
+        if (teaList.isEmpty()) {
+            EmptyList(
                 modifier =
                     Modifier
                         .fillMaxHeight()
-                        .padding(end = 8.dp),
-                adapter = rememberScrollbarAdapter(scrollState),
+                        .padding(16.dp),
             )
+        } else {
+            TextField(
+                modifier =
+                    Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth(),
+                value = query,
+                onValueChange = onQueryChange,
+                label = {
+                    Text(stringResource(Res.string.search_hint))
+                },
+                trailingIcon = {
+                    if (query.isNotEmpty()) {
+                        IconButton(
+                            onClick = { onQueryChange("") },
+                        ) {
+                            Icon(
+                                Icons.Default.Clear,
+                                contentDescription = stringResource(Res.string.search_clear_cd),
+                            )
+                        }
+                    }
+                },
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.End,
+            ) {
+                LazyColumn(
+                    modifier =
+                        Modifier.weight(
+                            weight = 1f,
+                            fill = true,
+                        ),
+                    state = scrollState,
+                ) {
+                    items(
+                        items = teaList,
+                        key = { tea -> tea.teaId },
+                    ) { tea ->
+                        TeaItem(
+                            modifier =
+                                Modifier
+                                    .animateItem()
+                                    .clickable {
+                                        onSelect(tea.teaId)
+                                    },
+                            tea = tea,
+                            isSelected = tea == selectedTea,
+                            onArchivedChange = { isArchived ->
+                                onArchivedChange(tea.teaId, isArchived)
+                            },
+                        )
+                    }
+                }
+
+                VerticalScrollbar(
+                    modifier =
+                        Modifier
+                            .fillMaxHeight()
+                            .padding(end = 8.dp),
+                    adapter = rememberScrollbarAdapter(scrollState),
+                )
+            }
         }
     }
 }
