@@ -16,4 +16,5 @@
     </string-array>
     <string name="empty_title">Choisis un thé pour commencer</string>
     <string name="empty_icon_cd">Dino qui boit son petit thé</string>
+    <string name="search_hint">Rechercher un thé…</string>
 </resources>

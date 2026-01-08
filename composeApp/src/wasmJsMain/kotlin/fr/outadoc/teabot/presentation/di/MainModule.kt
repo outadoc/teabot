@@ -14,7 +14,7 @@ val MainModule =
     module {
         single {
             AppConfig(
-                broadcasterUsername = "angledroit",
+                broadcasterUsername = "mynthos",
                 messagePrefixes = emptySet(),
             )
         }

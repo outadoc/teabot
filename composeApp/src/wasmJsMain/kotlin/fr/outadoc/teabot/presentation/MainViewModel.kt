@@ -30,15 +30,18 @@ class MainViewModel(
     data class State(
         val selectedTea: UiTea? = null,
         val teaList: ImmutableList<UiTea> = persistentListOf(),
+        val query: String = "",
     )
 
     private val selectedTeaFlow = MutableStateFlow<String?>(null)
+    private val queryFlow = MutableStateFlow("")
 
     val state: StateFlow<State> =
         combine(
             dbSource.getAll(),
             selectedTeaFlow,
-        ) { teaList, selectedTeaId ->
+            queryFlow,
+        ) { teaList, selectedTeaId, query ->
             val prefixes = appConfig.messagePrefixes.map { "$it " }
             val list =
                 teaList
@@ -65,10 +68,15 @@ class MainViewModel(
                                         )
                                     }.toPersistentList(),
                         )
-                    }.toPersistentList()
+                    }
 
             State(
-                teaList = list,
+                teaList =
+                    list
+                        .filter { tea ->
+                            tea.user.userName.contains(query, ignoreCase = true)
+                        }.toPersistentList(),
+                query = query,
                 selectedTea =
                     list.firstOrNull { tea ->
                         tea.teaId == selectedTeaId
@@ -120,6 +128,12 @@ class MainViewModel(
     ) {
         viewModelScope.launch {
             dbSource.setTeaArchived(teaId, isArchived)
+        }
+    }
+
+    fun onQueryChange(query: String) {
+        viewModelScope.launch {
+            queryFlow.emit(query)
         }
     }
 }

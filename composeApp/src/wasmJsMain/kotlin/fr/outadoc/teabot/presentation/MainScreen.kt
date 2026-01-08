@@ -26,6 +26,7 @@ fun MainScreen(
     scrollState: LazyListState = rememberLazyListState(),
     onSelect: (teaId: String) -> Unit = {},
     onArchivedChange: (teaId: String, Boolean) -> Unit = { _, _ -> },
+    onQueryChange: (String) -> Unit = {},
 ) {
     Scaffold(modifier = modifier) {
         Row {
@@ -37,8 +38,10 @@ fun MainScreen(
                 scrollState = scrollState,
                 teaList = state.teaList,
                 selectedTea = state.selectedTea,
+                query = state.query,
                 onSelect = onSelect,
                 onArchivedChange = onArchivedChange,
+                onQueryChange = onQueryChange,
             )
 
             VerticalScrollbar(

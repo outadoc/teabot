@@ -26,6 +26,7 @@ fun App() {
                 state = state,
                 onSelect = viewModel::onSelect,
                 onArchivedChange = viewModel::onArchivedChange,
+                onQueryChange = viewModel::onQueryChange,
             )
         }
     }

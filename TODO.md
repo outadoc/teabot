@@ -5,7 +5,7 @@
 - [x] État selected des thés
 - [x] Clean du HTML avec favicon
 - [x] Rework DB pour être tea-based
-- [ ] Filtre par pseudo (champ de recherche)
+- [x] Filtre par pseudo (champ de recherche)
 - [ ] Ajout de header / pied de page (crédits)
 - [ ] Bouton de lien vers un profil Twitch
 - [ ] Petit disclaimer "postez votre thé en préfixant **chaque message** avec !thé"
