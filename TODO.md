@@ -11,3 +11,4 @@
 - [x] Fonte sympa ?
 - [ ] Bouton de lien vers un profil Twitch
 - [ ] Auto-scroll to top when on top
+- [ ] Petite animation à l'archivage

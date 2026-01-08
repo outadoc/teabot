@@ -85,6 +85,11 @@ fun HelpDialog(
 
                     append("\n\n")
 
+                    append("Une fois lu, un thé peut être marqué comme lu et archivé en cliquant sur la case à cocher. ")
+                    append("Si son auteur·e poste un nouveau thé suite à cela, il apparaîtra comme une nouvelle entrée dans la liste.")
+
+                    append("\n\n")
+
                     append("Bonne dégustation ")
                     appendInlineContent(id = ":comfy:")
 
