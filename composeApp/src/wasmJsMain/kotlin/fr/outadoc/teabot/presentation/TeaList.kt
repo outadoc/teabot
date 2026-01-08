@@ -83,7 +83,7 @@ fun TeaList(
             },
         )
 
-        if (teaList.isEmpty()) {
+        if (teaList.isEmpty() && query.isEmpty()) {
             EmptyList(
                 modifier =
                     Modifier
