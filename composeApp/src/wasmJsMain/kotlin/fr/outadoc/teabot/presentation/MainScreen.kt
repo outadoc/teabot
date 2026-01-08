@@ -1,8 +1,6 @@
 package fr.outadoc.teabot.presentation
 
-import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
-import androidx.compose.foundation.defaultScrollbarStyle
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -27,8 +24,15 @@ fun MainScreen(
     onSelect: (teaId: String) -> Unit = {},
     onArchivedChange: (teaId: String, Boolean) -> Unit = { _, _ -> },
     onQueryChange: (String) -> Unit = {},
+    onHelpVisibilityChange: (Boolean) -> Unit = {},
 ) {
     Scaffold(modifier = modifier) {
+        if (state.isHelpDisplayed) {
+            HelpDialog(
+                onDismissRequest = { onHelpVisibilityChange(false) },
+            )
+        }
+
         Row {
             TeaList(
                 modifier =
@@ -42,6 +46,7 @@ fun MainScreen(
                 onSelect = onSelect,
                 onArchivedChange = onArchivedChange,
                 onQueryChange = onQueryChange,
+                onHelpVisibilityChange = onHelpVisibilityChange,
             )
 
             Column(

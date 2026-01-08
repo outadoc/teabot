@@ -6,8 +6,8 @@
 - [x] Clean du HTML avec favicon
 - [x] Rework DB pour être tea-based
 - [x] Filtre par pseudo (champ de recherche)
-- [ ] Ajout de header / pied de page (crédits)
-- [ ] Bouton de lien vers un profil Twitch
+- [x] Ajout de header / pied de page (crédits)
 - [ ] Petit disclaimer "postez votre thé en préfixant **chaque message** avec !thé"
+- [ ] Bouton de lien vers un profil Twitch
 - [ ] Fonte sympa ?
 - [ ] Auto-scroll to top when on top

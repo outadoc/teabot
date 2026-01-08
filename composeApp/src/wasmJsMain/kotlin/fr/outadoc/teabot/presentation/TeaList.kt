@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,6 +42,7 @@ fun TeaList(
     onSelect: (teaId: String) -> Unit = {},
     onArchivedChange: (teaId: String, Boolean) -> Unit = { _, _ -> },
     onQueryChange: (String) -> Unit = {},
+    onHelpVisibilityChange: (Boolean) -> Unit = {},
     scrollState: LazyListState = rememberLazyListState(),
 ) {
     Column(
@@ -48,6 +50,16 @@ fun TeaList(
     ) {
         TopAppBar(
             title = { Text("Boîte à thé") },
+            actions = {
+                IconButton(
+                    onClick = { onHelpVisibilityChange(true) },
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.Help,
+                        contentDescription = "Aide",
+                    )
+                }
+            },
         )
 
         TextField(

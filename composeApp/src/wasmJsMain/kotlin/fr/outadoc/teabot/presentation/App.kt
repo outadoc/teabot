@@ -27,6 +27,7 @@ fun App() {
                 onSelect = viewModel::onSelect,
                 onArchivedChange = viewModel::onArchivedChange,
                 onQueryChange = viewModel::onQueryChange,
+                onHelpVisibilityChange = viewModel::onHelpVisibilityChange,
             )
         }
     }

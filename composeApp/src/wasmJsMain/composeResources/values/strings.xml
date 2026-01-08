@@ -19,4 +19,8 @@
     <string name="search_hint">Rechercher un thé…</string>
     <string name="search_clear_cd">Effacer le filtre</string>
     <string name="tea_title">Thé de %1$s</string>
+    <string name="help_title">Comment ça marche ?</string>
+    <string name="help_icon_cd">Dino qui réfléchit</string>
+    <string name="help_description">WIP</string>
+    <string name="help_action_ok">Continuer</string>
 </resources>

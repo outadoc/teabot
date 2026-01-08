@@ -28,6 +28,7 @@ class MainViewModel(
     private val dbSource: DbSource,
 ) : ViewModel() {
     data class State(
+        val isHelpDisplayed: Boolean = true,
         val selectedTea: UiTea? = null,
         val teaList: ImmutableList<UiTea> = persistentListOf(),
         val query: String = "",
@@ -35,13 +36,15 @@ class MainViewModel(
 
     private val selectedTeaFlow = MutableStateFlow<String?>(null)
     private val queryFlow = MutableStateFlow("")
+    private val helpVisibilityFlow = MutableStateFlow(true)
 
     val state: StateFlow<State> =
         combine(
             dbSource.getAll(),
             selectedTeaFlow,
             queryFlow,
-        ) { teaList, selectedTeaId, query ->
+            helpVisibilityFlow,
+        ) { teaList, selectedTeaId, query, displayHelp ->
             val prefixes = appConfig.messagePrefixes.map { "$it " }
             val list =
                 teaList
@@ -81,6 +84,7 @@ class MainViewModel(
                     list.firstOrNull { tea ->
                         tea.teaId == selectedTeaId
                     },
+                isHelpDisplayed = displayHelp,
             )
         }.stateIn(
             viewModelScope,
@@ -134,6 +138,12 @@ class MainViewModel(
     fun onQueryChange(query: String) {
         viewModelScope.launch {
             queryFlow.emit(query)
+        }
+    }
+
+    fun onHelpVisibilityChange(visible: Boolean) {
+        viewModelScope.launch {
+            helpVisibilityFlow.emit(visible)
         }
     }
 }
