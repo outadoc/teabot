@@ -7,12 +7,12 @@ Twitch.
 
 # Comment l'utiliser
 
-Pour l'instant, la configuration est hardcodée pour pointer vers le tchat de twitch.tv/angledroit
-(à raison).
+En l'état, le projet est hardcodée pour pointer vers le tchat
+d'[AngleDroit](https://twitch.tv/angledroit).
 
-Il suffit de [naviguer sur le site](https://outadoc.github.io/teabot/) pour lancer l'app. Cette
-dernière se connecte de façon transparente au tchat Twitch et commence à recenser les messages
-commençant par `!thé`. Ceux-ci seront enregistrés en local dans le navigateur.
+Il suffit de [naviguer sur le site](https://outadoc.github.io/teabot/), qui va se connecter de façon
+transparente au tchat Twitch et commence à recenser les messages commençant par `!thé`.
+Ceux-ci seront enregistrés en local dans le navigateur et organisés dans une interface adaptée.
 
 ![screenshot.png](screenshot.png)
 
