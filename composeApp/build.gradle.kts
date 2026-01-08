@@ -35,6 +35,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
 
             implementation("com.github.eygraber.indexeddb:core:wasm-SNAPSHOT")
+            implementation("io.github.vinceglb:confettikit:0.7.0")
             implementation("io.ktor:ktor-client-core:3.3.3")
             implementation("io.ktor:ktor-client-cio:3.3.3")
             implementation("io.ktor:ktor-client-websockets:3.3.3")

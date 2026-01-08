@@ -9,6 +9,6 @@
 - [x] Ajout de header / pied de page (crédits)
 - [x] Petit disclaimer "postez votre thé en préfixant **chaque message** avec !thé"
 - [x] Fonte sympa ?
+- [x] Petite animation à l'archivage
 - [ ] Bouton de lien vers un profil Twitch
 - [ ] Auto-scroll to top when on top
-- [ ] Petite animation à l'archivage
