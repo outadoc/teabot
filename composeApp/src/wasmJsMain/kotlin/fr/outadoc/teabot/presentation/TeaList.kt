@@ -4,6 +4,7 @@ import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,9 +20,10 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -30,6 +32,7 @@ import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import fr.outadoc.teabot.generated.Res
 import fr.outadoc.teabot.generated.help_button_cd
@@ -103,10 +106,11 @@ fun TeaList(
                         .padding(16.dp),
             )
         } else {
-            TextField(
+            OutlinedTextField(
                 modifier =
                     Modifier
-                        .padding(8.dp)
+                        .padding(horizontal = 8.dp)
+                        .padding(bottom = 8.dp)
                         .fillMaxWidth(),
                 value = query,
                 onValueChange = onQueryChange,
@@ -137,6 +141,8 @@ fun TeaList(
                             fill = true,
                         ),
                     state = scrollState,
+                    contentPadding = PaddingValues(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(
                         items = teaList,
@@ -145,6 +151,7 @@ fun TeaList(
                         TeaItem(
                             modifier =
                                 Modifier
+                                    .clip(MaterialTheme.shapes.large)
                                     .animateItem()
                                     .clickable {
                                         onSelect(tea.teaId)
@@ -162,6 +169,7 @@ fun TeaList(
                     modifier =
                         Modifier
                             .fillMaxHeight()
+                            .padding(vertical = 8.dp)
                             .padding(end = 8.dp),
                     adapter = rememberScrollbarAdapter(scrollState),
                 )
