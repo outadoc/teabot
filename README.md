@@ -5,7 +5,7 @@ Twitch.
 
 ![sip.png](composeApp/src/wasmJsMain/composeResources/drawable/sip.png)
 
-# Comment l'utiliser
+## Comment l'utiliser
 
 En l'état, le projet est hardcodée pour pointer vers le tchat
 d'[AngleDroit](https://twitch.tv/angledroit).
@@ -16,7 +16,15 @@ Ceux-ci seront enregistrés en local dans le navigateur et organisés dans une i
 
 ![screenshot.png](screenshot.png)
 
-### Build and Run Web Application
+## Underlying technology
+
+This app is build with [Kotlin](https://kotlinlang.org/docs/multiplatform.html) and [Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/) for Web, targeting a single WASM target.
+
+The database is managed with an [indexeddb Kotlin wrapper](https://github.com/JuulLabs/indexeddb).
+
+The chat connection is handled by Ktor, using IRC over a websocket.
+
+## Build and Run Web Application
 
 To build and run the development version of the web app, use the run configuration from the run
 widget
