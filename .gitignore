@@ -31,7 +31,6 @@ node_modules/
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
