@@ -12,21 +12,21 @@ import org.koin.dsl.module
 
 val MainModule =
     module {
-        single {
-            AppConfig(
-                broadcasterUsername = "outadoc",
-                displayPrefix = "!thé",
-                matchedPrefixes = emptySet(),
-            )
-        }
-
 //        single {
 //            AppConfig(
-//                broadcasterUsername = "outadoc",
+//                broadcasterUsername = "antoinedaniel",
 //                displayPrefix = "!thé",
-//                allPrefixes = setOf("!the", "!thé"),
+//                matchedPrefixes = emptySet(),
 //            )
 //        }
+
+        single {
+            AppConfig(
+                broadcasterUsername = "angledroit",
+                displayPrefix = "!thé",
+                matchedPrefixes = setOf("!the", "!thé"),
+            )
+        }
 
         single {
             HttpClient {
