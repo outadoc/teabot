@@ -45,7 +45,7 @@ class MainViewModel(
             queryFlow,
             helpVisibilityFlow,
         ) { teaList, selectedTeaId, query, displayHelp ->
-            val prefixes = appConfig.messagePrefixes.map { "$it " }
+            val prefixes = appConfig.matchedPrefixes.map { "$it " }
             val list =
                 teaList
                     .map { tea ->
@@ -117,7 +117,7 @@ class MainViewModel(
 
     private fun messageMatches(message: ChatMessage): Boolean {
         val firstWord = message.text.takeWhile { it != ' ' }.lowercase()
-        return appConfig.messagePrefixes.isEmpty() || appConfig.messagePrefixes.contains(firstWord)
+        return appConfig.matchedPrefixes.isEmpty() || appConfig.matchedPrefixes.contains(firstWord)
     }
 
     fun onSelect(teaId: String) {

@@ -14,15 +14,17 @@ val MainModule =
     module {
         single {
             AppConfig(
-                broadcasterUsername = "ponce",
-                messagePrefixes = emptySet(),
+                broadcasterUsername = "antoinedaniel",
+                displayPrefix = "!thé",
+                matchedPrefixes = emptySet(),
             )
         }
 
 //        single {
 //            AppConfig(
 //                broadcasterUsername = "outadoc",
-//                messagePrefixes = setOf("!the", "!thé"),
+//                displayPrefix = "!thé",
+//                allPrefixes = setOf("!the", "!thé"),
 //            )
 //        }
 
