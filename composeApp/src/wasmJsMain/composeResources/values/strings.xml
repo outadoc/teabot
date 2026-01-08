@@ -18,4 +18,5 @@
     <string name="empty_icon_cd">Dino qui boit son petit thé</string>
     <string name="search_hint">Rechercher un thé…</string>
     <string name="search_clear_cd">Effacer le filtre</string>
+    <string name="tea_title">Thé de %1$s</string>
 </resources>
