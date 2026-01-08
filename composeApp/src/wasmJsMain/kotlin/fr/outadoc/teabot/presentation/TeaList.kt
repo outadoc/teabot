@@ -19,13 +19,20 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import fr.outadoc.teabot.generated.Res
+import fr.outadoc.teabot.generated.help_button_cd
+import fr.outadoc.teabot.generated.list_title
 import fr.outadoc.teabot.generated.search_clear_cd
 import fr.outadoc.teabot.generated.search_hint
 import fr.outadoc.teabot.presentation.model.UiTea
@@ -49,15 +56,29 @@ fun TeaList(
         modifier = modifier,
     ) {
         TopAppBar(
-            title = { Text("Boîte à thé") },
+            title = { Text(stringResource(Res.string.list_title)) },
             actions = {
-                IconButton(
-                    onClick = { onHelpVisibilityChange(true) },
+                TooltipBox(
+                    state = rememberTooltipState(),
+                    positionProvider =
+                        TooltipDefaults.rememberTooltipPositionProvider(
+                            positioning = TooltipAnchorPosition.Below,
+                            spacingBetweenTooltipAndAnchor = 8.dp,
+                        ),
+                    tooltip = {
+                        PlainTooltip {
+                            Text(stringResource(Res.string.help_button_cd))
+                        }
+                    },
                 ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.Help,
-                        contentDescription = "Aide",
-                    )
+                    IconButton(
+                        onClick = { onHelpVisibilityChange(true) },
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.Help,
+                            contentDescription = stringResource(Res.string.help_button_cd),
+                        )
+                    }
                 }
             },
         )

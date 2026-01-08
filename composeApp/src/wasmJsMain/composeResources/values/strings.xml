@@ -20,6 +20,10 @@
     <string name="search_clear_cd">Effacer le filtre</string>
     <string name="tea_title">Thé de %1$s</string>
     <string name="help_title">Comment ça marche ?</string>
+    <string name="help_button_cd">Aide</string>
     <string name="help_icon_cd">Dino qui réfléchit</string>
-    <string name="help_action_ok">Continuer</string>
+    <string name="help_action_ok">C'est OK</string>
+    <string name="list_title">Boîte à thé</string>
+    <string name="list_mark_read">Marquer comme lu</string>
+    <string name="list_mark_unread">Marquer comme non lu</string>
 </resources>
