@@ -3,7 +3,7 @@
 Ce projet consiste en un site web permettant de regrouper des anecdotes partagées sur un tchat
 Twitch.
 
-![sip.png](composeApp/src/wasmJsMain/composeResources/drawable/sip.png)
+![sip.png](composeApp/src/commonMain/composeResources/drawable/sip.png)
 
 ## Comment l'utiliser
 
