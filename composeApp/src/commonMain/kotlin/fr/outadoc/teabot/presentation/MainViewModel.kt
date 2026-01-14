@@ -2,10 +2,10 @@ package fr.outadoc.teabot.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import fr.outadoc.teabot.AppConfig
-import fr.outadoc.teabot.data.db.DbSource
 import fr.outadoc.teabot.data.irc.model.ChatMessage
 import fr.outadoc.teabot.domain.ChatSource
+import fr.outadoc.teabot.domain.DbSource
+import fr.outadoc.teabot.domain.model.AppConfig
 import fr.outadoc.teabot.presentation.model.UiMessage
 import fr.outadoc.teabot.presentation.model.UiTea
 import fr.outadoc.teabot.presentation.model.UiUser

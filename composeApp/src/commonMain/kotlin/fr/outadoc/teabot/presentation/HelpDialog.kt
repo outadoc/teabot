@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import fr.outadoc.teabot.AppConfig
+import fr.outadoc.teabot.domain.model.AppConfig
 import fr.outadoc.teabot.generated.Res
 import fr.outadoc.teabot.generated.comfy
 import fr.outadoc.teabot.generated.help_action_ok

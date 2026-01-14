@@ -1,11 +1,12 @@
-package fr.outadoc.teabot.data.db
+package fr.outadoc.teabot.data.db.indexeddb
 
 import Database
 import KeyPath
 import com.juul.indexeddb.external.IDBKey
-import fr.outadoc.teabot.data.db.model.DbMessage
-import fr.outadoc.teabot.data.db.model.DbTea
+import fr.outadoc.teabot.data.db.indexeddb.model.DbMessage
+import fr.outadoc.teabot.data.db.indexeddb.model.DbTea
 import fr.outadoc.teabot.data.irc.model.ChatMessage
+import fr.outadoc.teabot.domain.DbSource
 import fr.outadoc.teabot.domain.model.Message
 import fr.outadoc.teabot.domain.model.Tea
 import kotlinx.collections.immutable.ImmutableList
@@ -28,12 +29,12 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalWasmJsInterop::class, ExperimentalUuidApi::class)
-class DbSource {
+class IndexedDbSource : DbSource {
     private val mutex = Mutex()
     private var database: Database? = null
     private val refresh = MutableSharedFlow<Int>(replay = 1)
 
-    suspend fun getOrCreateDb(): Database {
+    private suspend fun getOrCreateDb(): Database {
         database?.let { return it }
         mutex.withLock {
             database?.let { return it }
@@ -49,7 +50,7 @@ class DbSource {
         }
     }
 
-    suspend fun saveMessage(message: ChatMessage) {
+    override suspend fun saveMessage(message: ChatMessage) {
         getOrCreateDb().writeTransaction(STORE_TEA) {
             val newMessage =
                 Message(
@@ -96,7 +97,7 @@ class DbSource {
         }
     }
 
-    suspend fun setTeaArchived(
+    override suspend fun setTeaArchived(
         teaId: String,
         isArchived: Boolean,
     ) {
@@ -119,7 +120,7 @@ class DbSource {
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    fun getAll(): Flow<ImmutableList<Tea>> =
+    override fun getAll(): Flow<ImmutableList<Tea>> =
         refresh
             .onStart { refresh() }
             .mapLatest {
@@ -135,7 +136,7 @@ class DbSource {
                 println("Reloading from db: ${it.count()} items")
             }
 
-    suspend fun refresh() {
+    override suspend fun refresh() {
         refresh.emit(Random.nextInt())
     }
 

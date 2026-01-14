@@ -1,4 +1,4 @@
-package fr.outadoc.teabot.data.db.model
+package fr.outadoc.teabot.data.db.indexeddb.model
 
 import com.juul.indexeddb.external.JsArray
 

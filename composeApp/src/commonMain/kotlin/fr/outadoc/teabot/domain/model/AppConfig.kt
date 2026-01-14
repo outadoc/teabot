@@ -1,4 +1,4 @@
-package fr.outadoc.teabot
+package fr.outadoc.teabot.domain.model
 
 data class AppConfig(
     val broadcasterUsername: String,
