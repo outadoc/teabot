@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -39,6 +40,7 @@ kotlin {
             implementation(libs.ktor.client.cio)
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.websockets)
+            implementation(libs.room.runtime)
         }
 
         wasmJsMain {
@@ -53,6 +55,9 @@ kotlin {
     }
 }
 
+room3 {
+    schemaDirectory("$projectDir/schemas")
+}
 compose.resources {
     packageOfResClass = "fr.outadoc.teabot.generated"
 }

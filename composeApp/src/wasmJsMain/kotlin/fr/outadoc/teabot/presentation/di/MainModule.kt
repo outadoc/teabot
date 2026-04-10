@@ -1,6 +1,8 @@
 package fr.outadoc.teabot.presentation.di
 
 import fr.outadoc.teabot.data.db.indexeddb.IndexedDbSource
+import fr.outadoc.teabot.data.db.room.RoomTeaDatabase
+import fr.outadoc.teabot.data.db.room.TeaMessageDao
 import fr.outadoc.teabot.data.irc.IrcChatSource
 import fr.outadoc.teabot.domain.ChatSource
 import fr.outadoc.teabot.domain.DbSource
@@ -29,7 +31,10 @@ val MainModule =
             }
         }
 
-        single<ChatSource> { IrcChatSource(get()) }
+        factory<TeaMessageDao> { get<RoomTeaDatabase>().teaMessageDao() }
         single<DbSource> { IndexedDbSource() }
+        // single<DbSource> { RoomDbSource(get()) }
+
+        single<ChatSource> { IrcChatSource(get()) }
         viewModel { MainViewModel(get(), get(), get()) }
     }

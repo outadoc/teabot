@@ -3,30 +3,33 @@ androidx-lifecycle = "2.9.6"
 compose-multiplatform = "1.10.0"
 koin = "4.1.1"
 kotlin = "2.3.0"
+room = "3.0.0-alpha03"
 
 [libraries]
 androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodelCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
-compose-foundation = { module="org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
-compose-material-icons = { module="org.jetbrains.compose.material:material-icons-extended", version = "1.7.3" }
-compose-material3 = { module="org.jetbrains.compose.material3:material3", version = "1.9.0" }
-compose-resources = { module="org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
-compose-runtime = { module="org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
-compose-ui = { module="org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
-compose-ui-preview = { module="org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
-confettikit = { module="io.github.vinceglb:confettikit", version = "0.7.0" }
-indexeddb-core = { module="com.github.eygraber.indexeddb:core", version = "wasm-SNAPSHOT" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+compose-material-icons = { module = "org.jetbrains.compose.material:material-icons-extended", version = "1.7.3" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version = "1.9.0" }
+compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
+compose-ui-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+confettikit = { module = "io.github.vinceglb:confettikit", version = "0.7.0" }
+indexeddb-core = { module = "com.github.eygraber.indexeddb:core", version = "wasm-SNAPSHOT" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.10.2" }
-kotlinx-datetime = { module="org.jetbrains.kotlinx:kotlinx-datetime", version = "0.7.1" }
-kotlinx-immutable = { module="org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.4.0" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.7.1" }
+kotlinx-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.4.0" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-ktor-client-cio = { module="io.ktor:ktor-client-cio", version = "3.3.3" }
-ktor-client-core = { module="io.ktor:ktor-client-core", version = "3.3.3" }
-ktor-client-websockets = { module="io.ktor:ktor-client-websockets", version = "3.3.3" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version = "3.3.3" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version = "3.3.3" }
+ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version = "3.3.3" }
+room-runtime = { module = "androidx.room3:room3-runtime", version.ref = "room" }
 
 [plugins]
 compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+room = { id = "androidx.room3", version.ref = "room" }
